@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Trocamos para sqlite para rodar fácil localmente. 
+  // Em produção mudamos para 'postgresql'
+  provider = "sqlite" 
+  url      = env("DATABASE_URL")
+}
+
+// --- MODELAGEM CREATOR HUB ---
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String    @unique // O slug da URL (ex: meudominio.com/joao)
+  name          String
+  avatarUrl     String?
+  bio           String?   // A frase de efeito
+  
+  // Cores personalizadas (pode ser expandido depois)
+  themeColor    String    @default("#000000")
+  
+  // Relacionamentos
+  socialLinks   SocialLinks?
+  products      Product[]
+  coupons       Coupon[]
+  partners      Partner[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SocialLinks {
+  id          String  @id @default(cuid())
+  
+  // Relacionamento 1-1 com User
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Links (Opcionais)
+  instagram   String?
+  tiktok      String?
+  youtube     String?
+  twitter     String? 
+  strava      String? // Importante para seu nicho de corrida
+  linkedin    String?
+  github      String?
+  whatsapp    String?
+  
+  // Controles de exibição (Para o admin desligar sem apagar o link)
+  showInsta   Boolean @default(false)
+  showTiktok  Boolean @default(false)
+  showYoutube Boolean @default(false)
+  showTwitter Boolean @default(false)
+  showStrava  Boolean @default(false)
+  showLinkedin Boolean @default(false)
+  showGithub  Boolean @default(false)
+  showWhatsapp Boolean @default(false)
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title        String
+  description  String?
+  imageUrl     String?
+  affiliateUrl String   // O link de afiliado
+  price        String?  
+  
+  clicks       Int      @default(0) // Métrica simples
+  active       Boolean  @default(true)
+  
+  createdAt    DateTime @default(now())
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  storeName   String   // Ex: "Centauro"
+  code        String   // Ex: "LUIS10"
+  discount    String   // Ex: "10% OFF"
+  link        String?  // Link opcional para a loja
+  
+  clicks      Int      @default(0)
+  active      Boolean  @default(true)
+}
+
+model Partner {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  logoUrl     String?
+  siteUrl     String
+  
+  clicks      Int      @default(0)
+  active      Boolean  @default(true)
+}
