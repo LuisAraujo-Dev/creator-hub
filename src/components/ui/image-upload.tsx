@@ -26,6 +26,7 @@ export const ImageUpload = ({
             variant="destructive"
             size="icon"
             className="h-6 w-6 rounded-full"
+            disabled={disabled} 
           >
             <X className="h-4 w-4" />
           </Button>
@@ -43,7 +44,7 @@ export const ImageUpload = ({
   }
 
   return (
-    <div className="w-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 hover:bg-gray-50 transition">
+    <div className={`w-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 hover:bg-gray-50 transition ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
         <UploadButton
             endpoint="imageUploader"
             onClientUploadComplete={(res) => {
