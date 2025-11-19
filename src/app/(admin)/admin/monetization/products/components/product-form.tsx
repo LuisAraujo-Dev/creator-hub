@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +24,7 @@ const productSchema = z.object({
   affiliateUrl: z.string().url("A URL de afiliado é inválida."),
   imageUrl: z.string().url("A URL da imagem é inválida.").optional().or(z.literal("")),
   price: z.string().optional(),
-  active: z.boolean().default(true),
+  active: z.boolean(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -42,7 +41,14 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+      title: initialData.title,
+      affiliateUrl: initialData.affiliateUrl,
+      active: initialData.active,
+      description: initialData.description || undefined,
+      price: initialData.price || undefined,
+      imageUrl: initialData.imageUrl || "",
+    } : {
       title: "",
       description: "",
       affiliateUrl: "",
@@ -54,7 +60,23 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
 
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      form.reset({
+        title: initialData.title,
+        affiliateUrl: initialData.affiliateUrl,
+        active: initialData.active,
+        description: initialData.description || undefined,
+        price: initialData.price || undefined,
+        imageUrl: initialData.imageUrl || "",
+      });
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        affiliateUrl: "",
+        imageUrl: "",
+        price: "",
+        active: true,
+      });
     }
   }, [initialData, form]);
 
@@ -62,24 +84,29 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
     setIsSubmitting(true);
 
     try {
-      // TODO: Implementar a chamada PUT (edição) ou POST (criação)
       const endpoint = isEditMode ? `/api/products/${initialData?.id}` : "/api/products";
       const method = isEditMode ? "PUT" : "POST";
       
+      const payload = {
+        ...data,
+        imageUrl: data.imageUrl === "" ? null : data.imageUrl,
+        description: data.description || null,
+        price: data.price || null,
+      };
+
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        // TODO: Mostrar Toast de sucesso
         console.log(`Produto ${isEditMode ? 'atualizado' : 'criado'} com sucesso!`);
         form.reset(); 
         onClose(); 
       } else {
-        // TODO: Mostrar Toast de erro
-        console.error("Falha ao salvar produto:", await response.json());
+        const errorData = await response.json();
+        console.error("Falha ao salvar produto:", errorData);
       }
     } catch (error) {
       console.error("Erro de rede:", error);

@@ -45,25 +45,22 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
                 storeName: initialData.storeName,
                 code: initialData.code,
                 discount: initialData.discount,
-                link: initialData.link || "", // Certifique-se de que link nunca seja null
+                link: initialData.link || "", 
                 active: initialData.active,
             }
             : {
                 storeName: "",
                 code: "",
                 discount: "",
-                link: "", // Valor padrão vazio para link
+                link: "", 
                 active: true,
             },
     });
 
     useEffect(() => {
         if (initialData) {
-            // O reset só deve ser chamado se o formulário estiver sendo usado para edição.
-            // Garantir que os dados iniciais correspondam à estrutura do formulário
             form.reset({
                 ...initialData,
-                // Garante que 'link' não seja 'null' se for a intenção, mas sim string vazia
                 link: initialData.link ?? "",
             });
         }
@@ -73,7 +70,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
         setIsSubmitting(true);
 
         try {
-            // Implementar a chamada PUT (edição) ou POST (criação)
             const endpoint = isEditMode ? `/api/coupons/${initialData?.id}` : "/api/coupons";
             const method = isEditMode ? "PUT" : "POST";
             const response = await fetch(endpoint, {
@@ -81,7 +77,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...data,
-                    // Garante que string vazia seja null para o backend (se o schema Prisma permitir)
                     link: data.link || null,
                 }),
             });
@@ -90,7 +85,7 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
                 // TODO: Mostrar Toast de sucesso
                 console.log(`Cupom ${isEditMode ? 'atualizado' : 'criado'} com sucesso!`);
                 form.reset();
-                onClose(true); // Fecha o modal e sinaliza que houve alteração
+                onClose(true); 
             } else {
                 // TODO: Mostrar Toast de erro
                 console.error("Falha ao salvar cupom:", await response.json());
@@ -145,7 +140,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
                         </Label>
                         <Switch
                             id="active"
-                            // Usar 'watch' é a maneira mais segura de ler o valor atual de um campo de formulário
                             checked={form.watch('active')}
                             onCheckedChange={(val) => form.setValue('active', val, { shouldValidate: true })}
                         />

@@ -1,73 +1,78 @@
-import prisma from '@/src/lib/prisma';
-import { NextResponse } from 'next/server';
-import * as z from 'zod';
+import prisma from "@/src/lib/prisma";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+const profileSchema = z.object({
+  name: z.string().min(2),
+  bio: z.string().optional(),
+  avatarUrl: z.string().optional().or(z.literal('')),
+  instagram: z.string().optional().or(z.literal('')),
+  strava: z.string().optional().or(z.literal('')),
+  youtube: z.string().optional().or(z.literal('')),
+});
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 
-const productSchema = z.object({
-    title: z.string().min(3).max(100),
-    description: z.string().max(200).optional().nullable(),
-    affiliateUrl: z.string().url(),
-    imageUrl: z.string().url().optional().or(z.literal('')).nullable(),
-    price: z.string().optional().nullable(),
-    active: z.boolean().default(true),
-});
+export async function GET() {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: MOCK_USER_ID },
+      include: { socialLinks: true }, 
+    });
 
-type ProductCreateData = z.infer<typeof productSchema>;
-
-export async function GET(request: Request) {
-    try {
-        const products = await prisma.product.findMany({
-            where: { userId: MOCK_USER_ID },
-            orderBy: { createdAt: 'desc' },
-        });
-
-        return NextResponse.json(products, { status: 200 });
-
-    } catch (error) {
-        console.error("Erro ao listar produtos:", error);
-        return NextResponse.json(
-            { message: "Erro interno ao buscar produtos." }, 
-            { status: 500 }
-        );
+    if (!user) {
+      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
     }
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("[PROFILE_GET]", error);
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
 }
 
-// === POST: Criar Novo Produto ===
-export async function POST(request: Request) {
-    try {
-        const body = await request.json();
-        
-        const validationResult = productSchema.safeParse(body);
-        
-        if (!validationResult.success) {
-            return NextResponse.json(
-                { message: "Dados inválidos.", errors: validationResult.error.flatten().fieldErrors }, 
-                { status: 400 }
-            );
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const data = profileSchema.parse(body);
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedUser = await tx.user.update({
+        where: { id: MOCK_USER_ID },
+        data: {
+          name: data.name,
+          bio: data.bio,
+          avatarUrl: data.avatarUrl,
+        },
+      });
+
+      const updatedSocials = await tx.socialLinks.upsert({
+        where: { userId: MOCK_USER_ID },
+        create: {
+            userId: MOCK_USER_ID,
+            instagram: data.instagram,
+            showInsta: !!data.instagram,
+            strava: data.strava,
+            showStrava: !!data.strava,
+            youtube: data.youtube,
+            showYoutube: !!data.youtube,
+        },
+        update: {
+            instagram: data.instagram,
+            showInsta: !!data.instagram,
+            strava: data.strava,
+            showStrava: !!data.strava,
+            youtube: data.youtube,
+            showYoutube: !!data.youtube,
         }
+      });
 
-        const data: ProductCreateData = validationResult.data;
+      return { ...updatedUser, socialLinks: updatedSocials };
+    });
 
-        const newProduct = await prisma.product.create({
-            data: {
-                userId: MOCK_USER_ID,
-                title: data.title,
-                description: data.description || null,
-                affiliateUrl: data.affiliateUrl,
-                imageUrl: data.imageUrl || null,
-                price: data.price || null,
-                active: data.active,
-            }
-        });
-
-        return NextResponse.json(newProduct, { status: 201 });
-
-    } catch (error) {
-        console.error("Erro ao criar produto:", error);
-        return NextResponse.json(
-            { message: "Erro interno ao criar produto." }, 
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("[PROFILE_UPDATE]", error);
+    return NextResponse.json({ error: "Erro ao atualizar perfil" }, { status: 500 });
+  }
 }

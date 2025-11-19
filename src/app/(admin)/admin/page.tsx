@@ -1,75 +1,157 @@
-'use client'; 
-
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreditCard, DollarSign, MousePointer2, Package } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle } from "lucide-react";
-import { Product } from "@prisma/client";
-import { columns } from "./components/columns";
-
-import { useState } from "react";
-import { DataTable } from "./monetization/products/components/data-table";
-import { ProductForm } from "./monetization/products/components/product-form";
+import prisma from "@/src/lib/prisma";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 
-async function getProducts(): Promise<Product[]> {
-    
-    const response = await fetch(`/api/products?userId=${MOCK_USER_ID}`, {
-        cache: 'no-store' 
-    });
-    if (!response.ok) return [];
-    
-    const data = await response.json();
-    return data as Product[];
-}
+export default async function DashboardPage() {
+  const [productsCount, couponsCount, user] = await Promise.all([
+    prisma.product.count({
+      where: { userId: MOCK_USER_ID, active: true },
+    }),
+    prisma.coupon.count({
+      where: { userId: MOCK_USER_ID, active: true },
+    }),
+    prisma.user.findUnique({
+        where: { id: MOCK_USER_ID },
+        include: {
+            products: { select: { clicks: true } },
+            coupons: { select: { clicks: true } }
+        }
+    })
+  ]);
 
+  const totalProductClicks = user?.products.reduce((acc, curr) => acc + curr.clicks, 0) || 0;
+  const totalCouponClicks = user?.coupons.reduce((acc, curr) => acc + curr.clicks, 0) || 0;
+  const totalClicks = totalProductClicks + totalCouponClicks;
 
-export default function ProductsPage() {
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchProducts = async () => {
-        setIsLoading(true);
-        const data = await getProducts();
-        setProducts(data);
-        setIsLoading(false);
-    }
-
-    useState(() => { fetchProducts() }) 
-
-    return (
-        <div className="space-y-6">
-            <header className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Recomendações e Produtos</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Gerencie seus links de afiliados, preços e cupons vinculados.
-                    </p>
-                </div>
-                <Button onClick={() => setIsFormOpen(true)}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Novo Produto
-                </Button>
-            </header>
-            
-            <Separator />
-
-            {isLoading ? (
-                <div className="flex justify-center items-center h-40">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                </div>
-            ) : (
-                <DataTable columns={columns} data={products} />
-            )}
-            
-            <ProductForm
-                isOpen={isFormOpen}
-                onClose={() => {
-                    setIsFormOpen(false);
-                    fetchProducts(); 
-                }}
-            />
+  return (
+    <div className="flex-1 space-y-6 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-sm text-muted-foreground">
+                Visão geral da sua performance no CreatorHub.
+            </p>
         </div>
-    );
+        <div className="flex items-center space-x-2">
+            <Link href="/admin/monetization/products">
+                <Button>Gerenciar Produtos</Button>
+            </Link>
+        </div>
+      </div>
+      
+      <Separator />
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Cliques
+            </CardTitle>
+            <MousePointer2 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalClicks}</div>
+            <p className="text-xs text-muted-foreground">
+              Em todos os links ativos
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Produtos Ativos
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{productsCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Recomendações publicadas
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Cupons Ativos
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{couponsCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Parcerias ativas
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Conversão Estimada
+            </CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">--%</div>
+            <p className="text-xs text-muted-foreground">
+              Disponível na versão Pro
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Visão Geral</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground bg-slate-50 rounded-md dark:bg-slate-900">
+                Gráfico de Cliques (Em breve)
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Acesso Rápido</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Navegue pelos seus módulos.
+            </p>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+             <div className="flex items-center gap-4">
+                <Link href="/admin/profile" className="w-full">
+                    <Button variant="outline" className="w-full justify-start">
+                        👤 Editar Perfil
+                    </Button>
+                </Link>
+             </div>
+             <div className="flex items-center gap-4">
+                <Link href="/admin/monetization/products" className="w-full">
+                    <Button variant="outline" className="w-full justify-start">
+                        🛍️ Meus Produtos
+                    </Button>
+                </Link>
+             </div>
+             <div className="flex items-center gap-4">
+                <Link href="/admin/monetization/cupons" className="w-full">
+                    <Button variant="outline" className="w-full justify-start">
+                        🎟️ Meus Cupons
+                    </Button>
+                </Link>
+             </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }

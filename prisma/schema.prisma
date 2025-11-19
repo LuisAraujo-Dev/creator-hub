@@ -49,14 +49,14 @@ model SocialLinks {
   github      String?
   whatsapp    String?
   
-  // Controles de exibição (TODOS PRECISAM TER UM DEFAULT, pois são Booleans não opcionais)
-  showInsta   Boolean @default(false)
-  showTiktok  Boolean @default(false)
-  showYoutube Boolean @default(false)
-  showTwitter Boolean @default(false)
-  showStrava  Boolean @default(false)
+  // Controles de exibição
+  showInsta    Boolean @default(false)
+  showTiktok   Boolean @default(false)
+  showYoutube  Boolean @default(false)
+  showTwitter  Boolean @default(false)
+  showStrava   Boolean @default(false)
   showLinkedin Boolean @default(false)
-  showGithub  Boolean @default(false)
+  showGithub   Boolean @default(false)
   showWhatsapp Boolean @default(false)
 }
 
@@ -75,6 +75,7 @@ model Product {
   active       Boolean  @default(true)
   
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt // Adicionado para controle
 }
 
 model Coupon {
@@ -89,6 +90,10 @@ model Coupon {
   
   clicks      Int      @default(0)
   active      Boolean  @default(true)
+
+  // --- CAMPOS ADICIONADOS PARA CORRIGIR O ERRO ---
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Partner {
@@ -102,4 +107,8 @@ model Partner {
   
   clicks      Int      @default(0)
   active      Boolean  @default(true)
+
+  // --- CAMPOS ADICIONADOS PARA PADRONIZAÇÃO ---
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
