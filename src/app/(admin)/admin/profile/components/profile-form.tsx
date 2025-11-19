@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import axios from "axios"
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { User, SocialLinks } from "@prisma/client"; 
+import { ImageUpload } from "@/src/components/ui/image-upload";
+
 
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;
@@ -21,7 +23,7 @@ type UserWithSocials = User & {
 const profileSchema = z.object({
   name: z.string().min(2, "Mínimo 2 caracteres").max(50),
   bio: z.string().max(160).optional(),
-  avatarUrl: z.string().url("URL inválida").optional().or(z.literal('')),
+  avatarUrl: z.string().optional().or(z.literal('')),
   instagram: z.string().optional().or(z.literal('')),
   strava: z.string().optional().or(z.literal('')),
   youtube: z.string().optional().or(z.literal('')),
@@ -55,7 +57,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             await axios.put('/api/profile', data);
             router.refresh(); 
         } catch (error) {
-            console.error(error);
+            console.error("Erro ao salvar perfil:", error);
         } finally {
             setIsSaving(false);
         }
@@ -68,23 +70,46 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                     <CardTitle>Informações Principais</CardTitle>
                     <CardDescription>Nome e frase de impacto que aparecem na sua página.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
+                    
+                    {/* SEÇÃO DE UPLOAD DE IMAGEM */}
+                    <div className="space-y-2">
+                        <Label>Foto de Perfil</Label>
+                        <div className="flex justify-center md:justify-start">
+                            <ImageUpload 
+                                value={form.watch("avatarUrl") || ""}
+                                onChange={(url) => form.setValue("avatarUrl", url, { shouldValidate: true })} 
+                                disabled={isSaving}
+                            />
+                        </div>
+                        <p className="text-[0.8rem] text-muted-foreground">
+                            Recomendado: Imagem quadrada, max 4MB.
+                        </p>
+                    </div>
+
                     <div className="space-y-2">
                         <Label htmlFor="name">Nome Completo</Label>
-                        <Input id="name" placeholder="Seu nome" {...form.register("name")} />
+                        <Input 
+                            id="name" 
+                            placeholder="Seu nome ou nome do canal" 
+                            disabled={isSaving} 
+                            {...form.register("name")} 
+                        />
                         {form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}
                     </div>
                     
                     <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea id="bio" className="resize-none" placeholder="Sobre você..." {...form.register("bio")} />
+                        <Label htmlFor="bio">Bio (Frase de Efeito)</Label>
+                        <Textarea 
+                            id="bio" 
+                            className="resize-none" 
+                            placeholder="Compartilho minha rotina de treinos..." 
+                            disabled={isSaving}
+                            {...form.register("bio")} 
+                        />
                         {form.formState.errors.bio && <p className="text-sm text-red-500">{form.formState.errors.bio.message}</p>}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="avatarUrl">URL do Avatar</Label>
-                        <Input id="avatarUrl" placeholder="https://..." {...form.register("avatarUrl")} />
-                    </div>
                 </CardContent>
             </Card>
 
@@ -96,15 +121,30 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="instagram">Instagram</Label>
-                        <Input id="instagram" placeholder="URL completa" {...form.register("instagram")} />
+                        <Input 
+                            id="instagram" 
+                            placeholder="https://instagram.com/seuusuario" 
+                            disabled={isSaving}
+                            {...form.register("instagram")} 
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="strava">Strava</Label>
-                        <Input id="strava" placeholder="URL completa" {...form.register("strava")} />
+                        <Input 
+                            id="strava" 
+                            placeholder="https://strava.com/athletes/..." 
+                            disabled={isSaving}
+                            {...form.register("strava")} 
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="youtube">Youtube</Label>
-                        <Input id="youtube" placeholder="URL completa" {...form.register("youtube")} />
+                        <Input 
+                            id="youtube" 
+                            placeholder="https://youtube.com/@..." 
+                            disabled={isSaving}
+                            {...form.register("youtube")} 
+                        />
                     </div>
                 </CardContent>
             </Card>
