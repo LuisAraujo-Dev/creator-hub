@@ -10,6 +10,7 @@ async function main() {
 
   const user = await prisma.user.create({
     data: {
+      id: "clerk_user_id_mock_1",
       email: 'demo@creatorhub.com',
       username: 'luisrun', // Será acessado via localhost:3000/luisrun
       name: 'Luís Runner',

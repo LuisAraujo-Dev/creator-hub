@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, User, Settings, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, User, Settings, LogOut, ExternalLink, ShoppingBag, Tag } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -24,6 +24,7 @@ export default function AdminLayout({
             <LayoutDashboard size={18} />
             Dashboard
           </Link>
+
           <Link 
             href="/admin/profile" 
             className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition"
@@ -31,6 +32,31 @@ export default function AdminLayout({
             <User size={18} />
             Meu Perfil
           </Link>
+          
+          <div className="pt-4 pb-1 px-3 text-xs font-semibold uppercase text-gray-400">
+            Monetização
+          </div>
+
+          <Link 
+            href="/admin/monetization/products" 
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition"
+          >
+            <ShoppingBag size={18} />
+            Recomendações
+          </Link>
+
+          <Link 
+            href="/admin/monetization/coupons" 
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition"
+          >
+            <Tag size={18} />
+            Cupons
+          </Link>
+
+          <div className="pt-4 pb-1 px-3 text-xs font-semibold uppercase text-gray-400">
+            Sistema
+          </div>
+
           <Link 
             href="/admin/settings" 
             className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition"

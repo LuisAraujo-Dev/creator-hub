@@ -1,48 +1,75 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, MousePointerClick, ShoppingBag } from "lucide-react";
+'use client'; 
 
-export default function DashboardPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Visão geral da sua performance.</p>
-      </div>
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Loader2, PlusCircle } from "lucide-react";
+import { Product } from "@prisma/client";
+import { columns } from "./components/columns";
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Visitas</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">+20.1% esse mês</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cliques em Links</CardTitle>
-            <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">342</div>
-            <p className="text-xs text-muted-foreground">+15% esse mês</p>
-          </CardContent>
-        </Card>
+import { useState } from "react";
+import { DataTable } from "./monetization/products/components/data-table";
+import { ProductForm } from "./monetization/products/components/product-form";
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cliques em Produtos</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">+7% esse mês</p>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+const MOCK_USER_ID = "clerk_user_id_mock_1";
+
+async function getProducts(): Promise<Product[]> {
+    
+    const response = await fetch(`/api/products?userId=${MOCK_USER_ID}`, {
+        cache: 'no-store' 
+    });
+    if (!response.ok) return [];
+    
+    const data = await response.json();
+    return data as Product[];
+}
+
+
+export default function ProductsPage() {
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchProducts = async () => {
+        setIsLoading(true);
+        const data = await getProducts();
+        setProducts(data);
+        setIsLoading(false);
+    }
+
+    useState(() => { fetchProducts() }) 
+
+    return (
+        <div className="space-y-6">
+            <header className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight">Recomendações e Produtos</h2>
+                    <p className="text-sm text-muted-foreground">
+                        Gerencie seus links de afiliados, preços e cupons vinculados.
+                    </p>
+                </div>
+                <Button onClick={() => setIsFormOpen(true)}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Novo Produto
+                </Button>
+            </header>
+            
+            <Separator />
+
+            {isLoading ? (
+                <div className="flex justify-center items-center h-40">
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                </div>
+            ) : (
+                <DataTable columns={columns} data={products} />
+            )}
+            
+            <ProductForm
+                isOpen={isFormOpen}
+                onClose={() => {
+                    setIsFormOpen(false);
+                    fetchProducts(); 
+                }}
+            />
+        </div>
+    );
 }

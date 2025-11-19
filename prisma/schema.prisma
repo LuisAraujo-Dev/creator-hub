@@ -44,12 +44,12 @@ model SocialLinks {
   tiktok      String?
   youtube     String?
   twitter     String? 
-  strava      String? // Importante para seu nicho de corrida
+  strava      String? 
   linkedin    String?
   github      String?
   whatsapp    String?
   
-  // Controles de exibição (Para o admin desligar sem apagar o link)
+  // Controles de exibição (TODOS PRECISAM TER UM DEFAULT, pois são Booleans não opcionais)
   showInsta   Boolean @default(false)
   showTiktok  Boolean @default(false)
   showYoutube Boolean @default(false)
