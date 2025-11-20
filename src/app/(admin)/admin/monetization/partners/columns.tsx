@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Partner } from "@prisma/client";
-import { CellAction } from "./cell-action";
+import { CellAction } from "./components/cell-action";
 import { Check, X } from "lucide-react";
 import Image from "next/image";
 

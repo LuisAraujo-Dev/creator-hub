@@ -5,7 +5,6 @@ import { Edit, MoreHorizontal, Trash, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Partner } from "@prisma/client";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +20,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PartnerForm } from "./components/partner-form";
+import { PartnerForm } from "./partner-form";
+import { Button } from "@/src/components/ui/button";
 
 
 interface CellActionProps {
