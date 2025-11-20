@@ -6,20 +6,44 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-
 import { User, SocialLinks } from "@prisma/client"; 
+import { ImageUpload } from "@/components/ui/image-upload"; 
+import { 
+  Instagram, Facebook, Linkedin, Twitter, Youtube, 
+  MessageCircle, Globe, Send, Gamepad2, Camera, Video, Ghost 
+} from "lucide-react";
 import { Label } from "../../../../../../components/ui/label";
-import { ImageUpload } from "@/components/ui/image-upload";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../../../../../components/ui/card";
 import { Input } from "../../../../../../components/ui/input";
 import { Textarea } from "../../../../../../components/ui/textarea";
-
+import { Switch } from "../../../../../../components/ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../../components/ui/card";
 
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;
 }
+
+const SOCIAL_CONFIG = [
+    { id: "instagram", label: "Instagram", icon: Instagram, placeholder: "https://instagram.com/..." },
+    { id: "tiktok", label: "TikTok", icon: Video, placeholder: "https://tiktok.com/@..." },
+    { id: "youtube", label: "YouTube", icon: Youtube, placeholder: "https://youtube.com/@..." },
+    { id: "facebook", label: "Facebook", icon: Facebook, placeholder: "https://facebook.com/..." },
+    { id: "twitter", label: "Twitter / X", icon: Twitter, placeholder: "https://twitter.com/..." },
+    { id: "linkedin", label: "LinkedIn", icon: Linkedin, placeholder: "https://linkedin.com/in/..." },
+    { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, placeholder: "https://wa.me/..." },
+    { id: "telegram", label: "Telegram", icon: Send, placeholder: "https://t.me/..." },
+    { id: "discord", label: "Discord", icon: Gamepad2, placeholder: "https://discord.gg/..." },
+    { id: "twitch", label: "Twitch", icon: Gamepad2, placeholder: "https://twitch.tv/..." },
+    { id: "pinterest", label: "Pinterest", icon: Camera, placeholder: "https://pinterest.com/..." },
+    { id: "strava", label: "Strava", icon: Globe, placeholder: "https://strava.com/athletes/..." },
+    { id: "kwai", label: "Kwai", icon: Video, placeholder: "Link do perfil Kwai" },
+    { id: "vsco", label: "VSCO", icon: Camera, placeholder: "https://vsco.co/..." },
+    { id: "snapchat", label: "Snapchat", icon: Ghost, placeholder: "https://snapchat.com/add/..." },
+    { id: "onlyfans", label: "OnlyFans", icon:  Camera, placeholder: "https://onlyfans.com/..." },
+    { id: "github", label: "GitHub", icon: Globe, placeholder: "https://github.com/..." },
+] as const;
 
 const profileSchema = z.object({
   name: z.string({
@@ -32,9 +56,24 @@ const profileSchema = z.object({
   }),
   bio: z.string().max(160, "A bio deve ter no máximo 160 caracteres.").optional(),
   avatarUrl: z.string().optional().or(z.literal('')),
-  instagram: z.string().optional().or(z.literal('')),
-  strava: z.string().optional().or(z.literal('')),
-  youtube: z.string().optional().or(z.literal('')),
+  
+  instagram: z.string().optional(),
+  tiktok: z.string().optional(),
+  youtube: z.string().optional(),
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  linkedin: z.string().optional(),
+  whatsapp: z.string().optional(),
+  telegram: z.string().optional(),
+  discord: z.string().optional(),
+  twitch: z.string().optional(),
+  pinterest: z.string().optional(),
+  strava: z.string().optional(),
+  kwai: z.string().optional(),
+  vsco: z.string().optional(),
+  snapchat: z.string().optional(),
+  onlyfans: z.string().optional(),
+  github: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -47,25 +86,43 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
 
+    const [activeNetworks, setActiveNetworks] = useState<Record<string, boolean>>(() => {
+        const socials = initialData?.socialLinks as any || {};
+        const initialActive: Record<string, boolean> = {};
+        SOCIAL_CONFIG.forEach((net) => {
+            if (socials[net.id] && socials[net.id].length > 0) {
+                initialActive[net.id] = true;
+            }
+        });
+        return initialActive;
+    });
+
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
             name: initialData?.name || "",
             bio: initialData?.bio || "",
             avatarUrl: initialData?.avatarUrl || "",
-            instagram: initialData?.socialLinks?.instagram || "",
-            strava: initialData?.socialLinks?.strava || "",
-            youtube: initialData?.socialLinks?.youtube || ""
+            ...(initialData?.socialLinks as any || {})
         },
     });
+
+    const toggleNetwork = (id: string, active: boolean) => {
+        setActiveNetworks(prev => ({ ...prev, [id]: active }));
+        if (!active) {
+            form.setValue(id as any, ""); 
+        }
+    };
 
     async function onSubmit(data: ProfileFormValues) {
         try {
             setIsSaving(true);
             await axios.put('/api/profile', data);
+            toast.success("Perfil atualizado com sucesso!");
             router.refresh(); 
         } catch (error) {
             console.error(error);
+            toast.error("Erro ao atualizar perfil.");
         } finally {
             setIsSaving(false);
         }
@@ -132,35 +189,45 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <Card>
                 <CardHeader>
                     <CardTitle>Redes Sociais</CardTitle>
-                    <CardDescription>Links que aparecerão no topo do perfil.</CardDescription>
+                    <CardDescription>Ative e adicione os links das redes que você utiliza.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="instagram">Instagram</Label>
-                        <Input 
-                            id="instagram" 
-                            placeholder="https://instagram.com/seuusuario" 
-                            disabled={isSaving}
-                            {...form.register("instagram")} 
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="strava">Strava</Label>
-                        <Input 
-                            id="strava" 
-                            placeholder="https://strava.com/athletes/..." 
-                            disabled={isSaving}
-                            {...form.register("strava")} 
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="youtube">Youtube</Label>
-                        <Input 
-                            id="youtube" 
-                            placeholder="https://youtube.com/@..." 
-                            disabled={isSaving}
-                            {...form.register("youtube")} 
-                        />
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {SOCIAL_CONFIG.map((net) => {
+                            const isActive = activeNetworks[net.id];
+                            const Icon = net.icon;
+
+                            return (
+                                <div key={net.id} className={`border rounded-lg p-4 transition-all ${isActive ? 'bg-gray-50 border-gray-300' : 'bg-white border-gray-100 opacity-70 hover:opacity-100'}`}>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`p-2 rounded-full ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                <Icon size={18} />
+                                            </div>
+                                            <Label htmlFor={`switch-${net.id}`} className="cursor-pointer font-semibold text-sm">
+                                                {net.label}
+                                            </Label>
+                                        </div>
+                                        <Switch 
+                                            id={`switch-${net.id}`}
+                                            checked={isActive}
+                                            onCheckedChange={(val) => toggleNetwork(net.id, val)}
+                                        />
+                                    </div>
+                                    
+                                    {isActive && (
+                                        <div className="mt-3 animate-in slide-in-from-top-2 fade-in duration-200">
+                                            <Input 
+                                                placeholder={net.placeholder} 
+                                                {...form.register(net.id as any)} 
+                                                className="bg-white"
+                                                disabled={isSaving}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </CardContent>
             </Card>

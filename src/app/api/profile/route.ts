@@ -6,9 +6,24 @@ const profileSchema = z.object({
   name: z.string().min(2),
   bio: z.string().optional(),
   avatarUrl: z.string().optional().or(z.literal('')),
+
   instagram: z.string().optional().or(z.literal('')),
-  strava: z.string().optional().or(z.literal('')),
+  tiktok: z.string().optional().or(z.literal('')),
   youtube: z.string().optional().or(z.literal('')),
+  twitter: z.string().optional().or(z.literal('')),
+  strava: z.string().optional().or(z.literal('')),
+  linkedin: z.string().optional().or(z.literal('')),
+  github: z.string().optional().or(z.literal('')),
+  whatsapp: z.string().optional().or(z.literal('')),
+  facebook: z.string().optional().or(z.literal('')),
+  pinterest: z.string().optional().or(z.literal('')),
+  telegram: z.string().optional().or(z.literal('')),
+  discord: z.string().optional().or(z.literal('')),
+  twitch: z.string().optional().or(z.literal('')),
+  kwai: z.string().optional().or(z.literal('')),
+  vsco: z.string().optional().or(z.literal('')),
+  snapchat: z.string().optional().or(z.literal('')),
+  onlyfans: z.string().optional().or(z.literal('')),
 });
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
@@ -17,13 +32,10 @@ export async function GET() {
   try {
     const user = await prisma.user.findUnique({
       where: { id: MOCK_USER_ID },
-      include: { socialLinks: true }, 
+      include: { socialLinks: true },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
-    }
-
+    if (!user) return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
     return NextResponse.json(user);
   } catch (error) {
     console.error("[PROFILE_GET]", error);
@@ -45,26 +57,31 @@ export async function PUT(request: Request) {
           avatarUrl: data.avatarUrl,
         },
       });
+      const socialData = {
+        instagram: data.instagram, showInsta: !!data.instagram,
+        tiktok: data.tiktok, showTiktok: !!data.tiktok,
+        youtube: data.youtube, showYoutube: !!data.youtube,
+        twitter: data.twitter, showTwitter: !!data.twitter,
+        strava: data.strava, showStrava: !!data.strava,
+        linkedin: data.linkedin, showLinkedin: !!data.linkedin,
+        github: data.github, showGithub: !!data.github,
+        whatsapp: data.whatsapp, showWhatsapp: !!data.whatsapp,
+        facebook: data.facebook, showFacebook: !!data.facebook,
+        pinterest: data.pinterest, showPinterest: !!data.pinterest,
+        telegram: data.telegram, showTelegram: !!data.telegram,
+        discord: data.discord, showDiscord: !!data.discord,
+        twitch: data.twitch, showTwitch: !!data.twitch,
+        kwai: data.kwai, showKwai: !!data.kwai,
+        vsco: data.vsco, showVsco: !!data.vsco,
+        snapchat: data.snapchat, showSnapchat: !!data.snapchat,
+        onlyfans: data.onlyfans, showOnlyfans: !!data.onlyfans,
+      };
 
+      // 3. Atualiza ou Cria (Upsert) os SocialLinks
       const updatedSocials = await tx.socialLinks.upsert({
         where: { userId: MOCK_USER_ID },
-        create: {
-            userId: MOCK_USER_ID,
-            instagram: data.instagram,
-            showInsta: !!data.instagram,
-            strava: data.strava,
-            showStrava: !!data.strava,
-            youtube: data.youtube,
-            showYoutube: !!data.youtube,
-        },
-        update: {
-            instagram: data.instagram,
-            showInsta: !!data.instagram,
-            strava: data.strava,
-            showStrava: !!data.strava,
-            youtube: data.youtube,
-            showYoutube: !!data.youtube,
-        }
+        create: { userId: MOCK_USER_ID, ...socialData },
+        update: { ...socialData }
       });
 
       return { ...updatedUser, socialLinks: updatedSocials };

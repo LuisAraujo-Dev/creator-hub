@@ -39,7 +39,7 @@ model SocialLinks {
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Links (Opcionais)
+  // --- Links Existentes ---
   instagram   String?
   tiktok      String?
   youtube     String?
@@ -48,8 +48,19 @@ model SocialLinks {
   linkedin    String?
   github      String?
   whatsapp    String?
+
+  // --- Novos Links Adicionados ---
+  facebook    String?
+  pinterest   String?
+  telegram    String?
+  discord     String?
+  twitch      String?
+  kwai        String?
+  vsco        String?
+  snapchat    String?
+  onlyfans    String?
   
-  // Controles de exibição
+  // --- Controles de exibição ---
   showInsta    Boolean @default(false)
   showTiktok   Boolean @default(false)
   showYoutube  Boolean @default(false)
@@ -58,6 +69,17 @@ model SocialLinks {
   showLinkedin Boolean @default(false)
   showGithub   Boolean @default(false)
   showWhatsapp Boolean @default(false)
+
+  // --- Novos Controles ---
+  showFacebook Boolean @default(false)
+  showPinterest Boolean @default(false)
+  showTelegram Boolean @default(false)
+  showDiscord  Boolean @default(false)
+  showTwitch   Boolean @default(false)
+  showKwai     Boolean @default(false)
+  showVsco     Boolean @default(false)
+  showSnapchat Boolean @default(false)
+  showOnlyfans Boolean @default(false)
 }
 
 model Product {

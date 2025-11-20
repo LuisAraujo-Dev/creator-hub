@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
-  FaInstagram,
-  FaYoutube,
-  FaStrava,
-  FaTwitter,
-  FaLinkedin,
-  FaTiktok
+  FaInstagram, FaYoutube, FaStrava, FaTwitter, FaLinkedin, FaTiktok,
+  FaFacebook, FaPinterest, FaTelegram, FaDiscord, FaTwitch, FaSnapchatGhost, FaGithub, FaWhatsapp
 } from "react-icons/fa";
+import { SiKuaishou, SiVsco, SiOnlyfans } from "react-icons/si"; 
 import LinkTracker from "@/components/link-tracker";
 import { ExternalLink } from "lucide-react";
 import prisma from "@/lib/prisma";
@@ -37,6 +34,23 @@ export default async function UserProfile({ params }: PageProps) {
   if (!data) return notFound();
 
   const themeColor = data.themeColor || "#000000";
+  
+  const s = data.socialLinks; 
+
+  const SocialIcon = ({ show, link, icon: Icon, color, bgClass }: any) => {
+    if (!show || !link) return null;
+    return (
+      <a 
+        href={link} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className={`text-[${color}] hover:scale-110 transition-transform duration-200 p-3 rounded-full ${bgClass} flex items-center justify-center`}
+        title={link}
+      >
+         <Icon size={24} style={{ color: color }} />
+      </a>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center font-sans">
@@ -69,37 +83,31 @@ export default async function UserProfile({ params }: PageProps) {
             <p className="text-sm text-gray-500 mt-2 leading-relaxed max-w-[320px] mx-auto">{data.bio}</p>
         </header>
 
-        <div className="flex justify-center gap-4 mt-6 flex-wrap px-6">
-            {data.socialLinks?.showInsta && (
-              <a href={data.socialLinks.instagram || '#'} target="_blank" className="text-[#E1306C] hover:scale-110 transition-transform duration-200 bg-pink-50 p-3 rounded-full hover:bg-pink-100">
-                <FaInstagram size={24} />
-              </a>
-            )}
-            {data.socialLinks?.showYoutube && (
-              <a href={data.socialLinks.youtube || '#'} target="_blank" className="text-[#FF0000] hover:scale-110 transition-transform duration-200 bg-red-50 p-3 rounded-full hover:bg-red-100">
-                <FaYoutube size={24} />
-              </a>
-            )}
-            {data.socialLinks?.showStrava && (
-               <a href={data.socialLinks.strava || '#'} target="_blank" className="text-[#FC4C02] hover:scale-110 transition-transform duration-200 bg-orange-50 p-3 rounded-full hover:bg-orange-100">
-                <FaStrava size={24} />
-               </a>
-            )}
-            {data.socialLinks?.showTiktok && (
-               <a href={data.socialLinks.tiktok || '#'} target="_blank" className="text-black hover:scale-110 transition-transform duration-200 bg-gray-100 p-3 rounded-full hover:bg-gray-200">
-                <FaTiktok size={22} />
-               </a>
-            )}
-            {data.socialLinks?.showTwitter && (
-               <a href={data.socialLinks.twitter || '#'} target="_blank" className="text-[#1DA1F2] hover:scale-110 transition-transform duration-200 bg-blue-50 p-3 rounded-full hover:bg-blue-100">
-                <FaTwitter size={24} />
-               </a>
-            )}
-             {data.socialLinks?.showLinkedin && (
-               <a href={data.socialLinks.linkedin || '#'} target="_blank" className="text-[#0077B5] hover:scale-110 transition-transform duration-200 bg-sky-50 p-3 rounded-full hover:bg-sky-100">
-                <FaLinkedin size={24} />
-               </a>
-            )}
+        <div className="flex justify-center gap-3 mt-6 flex-wrap px-6">
+            {/* Redes Principais */}
+            <SocialIcon show={s?.showInsta} link={s?.instagram} icon={FaInstagram} color="#E1306C" bgClass="hover:bg-pink-50" />
+            <SocialIcon show={s?.showTiktok} link={s?.tiktok} icon={FaTiktok} color="#000000" bgClass="hover:bg-gray-100" />
+            <SocialIcon show={s?.showYoutube} link={s?.youtube} icon={FaYoutube} color="#FF0000" bgClass="hover:bg-red-50" />
+            <SocialIcon show={s?.showFacebook} link={s?.facebook} icon={FaFacebook} color="#1877F2" bgClass="hover:bg-blue-50" />
+            <SocialIcon show={s?.showTwitter} link={s?.twitter} icon={FaTwitter} color="#1DA1F2" bgClass="hover:bg-sky-50" />
+            <SocialIcon show={s?.showLinkedin} link={s?.linkedin} icon={FaLinkedin} color="#0A66C2" bgClass="hover:bg-blue-50" />
+            <SocialIcon show={s?.showPinterest} link={s?.pinterest} icon={FaPinterest} color="#BD081C" bgClass="hover:bg-red-50" />
+            
+            {/* Mensageiros */}
+            <SocialIcon show={s?.showWhatsapp} link={s?.whatsapp} icon={FaWhatsapp} color="#25D366" bgClass="hover:bg-green-50" />
+            <SocialIcon show={s?.showTelegram} link={s?.telegram} icon={FaTelegram} color="#0088CC" bgClass="hover:bg-sky-50" />
+            <SocialIcon show={s?.showDiscord} link={s?.discord} icon={FaDiscord} color="#5865F2" bgClass="hover:bg-indigo-50" />
+            
+            {/* Nicho & Outros */}
+            <SocialIcon show={s?.showTwitch} link={s?.twitch} icon={FaTwitch} color="#9146FF" bgClass="hover:bg-purple-50" />
+            <SocialIcon show={s?.showStrava} link={s?.strava} icon={FaStrava} color="#FC4C02" bgClass="hover:bg-orange-50" />
+            <SocialIcon show={s?.showSnapchat} link={s?.snapchat} icon={FaSnapchatGhost} color="#FFFC00" bgClass="hover:bg-yellow-50" />
+            <SocialIcon show={s?.showGithub} link={s?.github} icon={FaGithub} color="#181717" bgClass="hover:bg-gray-100" />
+            
+            {/* Ícones Especiais */}
+            <SocialIcon show={s?.showKwai} link={s?.kwai} icon={SiKuaishou} color="#FF8F00" bgClass="hover:bg-orange-50" />
+            <SocialIcon show={s?.showVsco} link={s?.vsco} icon={SiVsco} color="#000000" bgClass="hover:bg-gray-100" />
+            <SocialIcon show={s?.showOnlyfans} link={s?.onlyfans} icon={SiOnlyfans} color="#00AFF0" bgClass="hover:bg-sky-50" />
         </div>
 
         <div className="w-full px-8 mt-8 mb-6">
@@ -193,7 +201,7 @@ export default async function UserProfile({ params }: PageProps) {
                                     </p>
                                   )}
                                   {product.price && (
-                                    <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 text-gray-600 group-hover:bg-gray-100 transition-colors">
+                                    <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 group-hover:bg-gray-200 transition-colors">
                                         {product.price}
                                     </span>
                                   )}
