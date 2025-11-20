@@ -1,21 +1,17 @@
 import prisma from "@/src/lib/prisma";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { ProfileForm } from "./components/profile-form";
+import { ProfileForm } from "./components/profile-form"; 
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 export default async function ProfilePage() {
     const user = await prisma.user.findUnique({
-        where: {
-            id: MOCK_USER_ID
-        },
-        include: {
-            socialLinks: true
-        }
+        where: { id: MOCK_USER_ID },
+        include: { socialLinks: true }
     });
 
     return (
-        <div className="space-y-6 p-8 pt-6">
+        <div className="space-y-6 max-w-2xl mx-auto">
             <header>
                 <h2 className="text-2xl font-bold tracking-tight">Meu Perfil</h2>
                 <p className="text-sm text-muted-foreground">
@@ -24,7 +20,7 @@ export default async function ProfilePage() {
             </header>
             
             <Separator />
-
+            
             <ProfileForm initialData={user} />
         </div>
     );

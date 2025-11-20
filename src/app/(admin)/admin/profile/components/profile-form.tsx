@@ -15,14 +15,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { User, SocialLinks } from "@prisma/client"; 
 import { ImageUpload } from "@/src/components/ui/image-upload";
 
-
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;
 }
 
 const profileSchema = z.object({
-  name: z.string().min(2, "Mínimo 2 caracteres").max(50),
-  bio: z.string().max(160).optional(),
+  name: z.string({
+    required_error: "O nome é obrigatório.",
+    invalid_type_error: "O nome deve ser um texto.",
+  }).min(2, {
+    message: "O nome deve ter pelo menos 2 caracteres.",
+  }).max(50, {
+    message: "O nome pode ter no máximo 50 caracteres.",
+  }),
+  bio: z.string().max(160, "A bio deve ter no máximo 160 caracteres.").optional(),
   avatarUrl: z.string().optional().or(z.literal('')),
   instagram: z.string().optional().or(z.literal('')),
   strava: z.string().optional().or(z.literal('')),
@@ -57,27 +63,27 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             await axios.put('/api/profile', data);
             router.refresh(); 
         } catch (error) {
-            console.error("Erro ao salvar perfil:", error);
+            console.error(error);
         } finally {
             setIsSaving(false);
         }
     }
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Card className="max-w-xl">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+            
+            <Card>
                 <CardHeader>
                     <CardTitle>Informações Principais</CardTitle>
                     <CardDescription>Nome e frase de impacto que aparecem na sua página.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     
-                    {/* SEÇÃO DE UPLOAD DE IMAGEM */}
                     <div className="space-y-2">
                         <Label>Foto de Perfil</Label>
                         <div className="flex justify-center md:justify-start">
                             <ImageUpload 
-                                value={form.watch("avatarUrl") || ""}
+                                value={form.watch("avatarUrl") || ""} 
                                 onChange={(url) => form.setValue("avatarUrl", url, { shouldValidate: true })} 
                                 disabled={isSaving}
                             />
@@ -95,7 +101,11 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                             disabled={isSaving} 
                             {...form.register("name")} 
                         />
-                        {form.formState.errors.name && <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>}
+                        {form.formState.errors.name && (
+                            <p className="text-sm font-medium text-red-500">
+                                {form.formState.errors.name.message}
+                            </p>
+                        )}
                     </div>
                     
                     <div className="space-y-2">
@@ -107,13 +117,17 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                             disabled={isSaving}
                             {...form.register("bio")} 
                         />
-                        {form.formState.errors.bio && <p className="text-sm text-red-500">{form.formState.errors.bio.message}</p>}
+                        {form.formState.errors.bio && (
+                            <p className="text-sm font-medium text-red-500">
+                                {form.formState.errors.bio.message}
+                            </p>
+                        )}
                     </div>
 
                 </CardContent>
             </Card>
 
-            <Card className="max-w-xl">
+            <Card>
                 <CardHeader>
                     <CardTitle>Redes Sociais</CardTitle>
                     <CardDescription>Links que aparecerão no topo do perfil.</CardDescription>
@@ -149,9 +163,11 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 </CardContent>
             </Card>
             
-            <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Salvando..." : "Salvar Alterações"}
-            </Button>
+            <div className="flex justify-end">
+                <Button type="submit" disabled={isSaving} size="lg">
+                    {isSaving ? "Salvando..." : "Salvar Alterações"}
+                </Button>
+            </div>
         </form>
     );
 }
