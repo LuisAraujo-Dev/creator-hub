@@ -21,7 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PartnerForm } from "./partner-form";
+import { PartnerForm } from "./components/partner-form";
+
 
 interface CellActionProps {
   data: Partner;

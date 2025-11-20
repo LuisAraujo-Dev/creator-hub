@@ -9,7 +9,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/src/components/data-table";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { PartnerForm } from "./partner-form";
+import { PartnerForm } from "./components/partner-form";
+
 
 interface Props {
   data: Partner[];
