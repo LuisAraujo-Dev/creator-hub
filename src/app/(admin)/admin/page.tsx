@@ -143,7 +143,7 @@ export default async function DashboardPage() {
                 </Link>
              </div>
              <div className="flex items-center gap-4">
-                <Link href="/admin/monetization/cupons" className="w-full">
+                <Link href="/admin/monetization/coupons" className="w-full">
                     <Button variant="outline" className="w-full justify-start">
                         🎟️ Meus Cupons
                     </Button>
