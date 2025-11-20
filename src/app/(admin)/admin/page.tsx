@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   const totalClicks = totalProductClicks + totalCouponClicks;
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between space-y-2">
         <div>
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
             <CardTitle>Visão Geral</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground bg-slate-50 rounded-md dark:bg-slate-900">
+            <div className="h-[200px] flex items-center justify-center text-muted-foreground bg-slate-100 rounded-md dark:bg-slate-800">
                 Gráfico de Cliques (Em breve)
             </div>
           </CardContent>
