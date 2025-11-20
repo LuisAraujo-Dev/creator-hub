@@ -1,6 +1,6 @@
-import prisma from "@/src/lib/prisma";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { ProfileForm } from "./components/profile-form"; 
+import prisma from "@/lib/prisma";
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 

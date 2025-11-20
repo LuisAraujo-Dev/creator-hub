@@ -8,12 +8,14 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { User, SocialLinks } from "@prisma/client"; 
-import { ImageUpload } from "@/src/components/ui/image-upload";
+import { Label } from "../../../../../../components/ui/label";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../../../../../components/ui/card";
+import { Input } from "../../../../../../components/ui/input";
+import { Textarea } from "../../../../../../components/ui/textarea";
+
 
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;

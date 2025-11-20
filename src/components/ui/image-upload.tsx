@@ -3,7 +3,8 @@
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UploadButton } from "@/src/lib/uploadthing";
+import { cn } from "../../../lib/utils"
+import { UploadButton } from "@/lib/uploadthing";
 
 interface ImageUploadProps {
   value: string;

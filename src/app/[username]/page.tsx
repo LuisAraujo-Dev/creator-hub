@@ -9,8 +9,9 @@ import {
   FaLinkedin,
   FaTiktok
 } from "react-icons/fa";
-import prisma from "@/src/lib/prisma";
-import LinkTracker from "@/src/components/link-tracker";
+import prisma from "@/lib/prisma";
+import LinkTracker from "@/components/link-tracker";
+
 
 interface PageProps {
   params: { username: string };

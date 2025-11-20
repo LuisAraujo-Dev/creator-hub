@@ -3,8 +3,8 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react" // Correção: XIcon -> X (em versões novas do lucide)
+import { cn } from "../../lib/utils"
 
-import { cn } from "@/lib/utils"
 
 function Dialog({
   ...props
