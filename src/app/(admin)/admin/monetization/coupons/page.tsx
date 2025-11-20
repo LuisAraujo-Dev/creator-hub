@@ -1,4 +1,4 @@
-import prisma from "@/src/lib/prisma";
+import prisma from "@/lib/prisma";
 import DataTableClient from "./DataTableClient";
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";

@@ -7,23 +7,13 @@ import { Coupon } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+
 import { CouponForm } from "./coupon-form";
-import { Button } from "@/src/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../../components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+
 
 interface CellActionProps {
   data: Coupon;
@@ -32,18 +22,15 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   
-  // Estados para controlar os Modais
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Função: Copiar código do cupom
   const onCopyCode = () => {
     navigator.clipboard.writeText(data.code);
     toast.success("Código do cupom copiado!");
   };
 
-  // Função: Deletar cupom
   const onDelete = async () => {
     try {
       setLoading(true);
@@ -61,7 +48,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      {/* 1. Modal de Confirmação de Exclusão */}
       <Dialog open={openDelete} onOpenChange={setOpenDelete}>
         <DialogContent>
           <DialogHeader>

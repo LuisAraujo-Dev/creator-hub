@@ -12,7 +12,7 @@ import {
   Tag, 
   Handshake
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../../lib/utils";
 
 export default function AdminLayout({
   children,

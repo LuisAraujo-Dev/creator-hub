@@ -1,8 +1,7 @@
-import prisma from "@/src/lib/prisma";
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// Schema para validação (campos opcionais na edição)
 const updateProductSchema = z.object({
   title: z.string().min(3).optional(),
   description: z.string().optional(),
@@ -20,12 +19,10 @@ interface Context {
   };
 }
 
-// --- DELETE: Remover Produto ---
 export async function DELETE(request: Request, context: Context) {
   try {
     const { id } = context.params;
 
-    // Verifica se o produto existe e pertence ao usuário
     const product = await prisma.product.findUnique({
       where: { id, userId: MOCK_USER_ID },
     });
@@ -51,7 +48,6 @@ export async function DELETE(request: Request, context: Context) {
   }
 }
 
-// --- PUT: Atualizar Produto ---
 export async function PUT(request: Request, context: Context) {
   try {
     const { id } = context.params;
@@ -66,7 +62,6 @@ export async function PUT(request: Request, context: Context) {
       );
     }
 
-    // Verifica propriedade
     const existingProduct = await prisma.product.findUnique({
       where: { id, userId: MOCK_USER_ID },
     });
@@ -82,7 +77,6 @@ export async function PUT(request: Request, context: Context) {
       where: { id },
       data: {
         ...validation.data,
-        // Limpa imagem se vier string vazia
         imageUrl: validation.data.imageUrl === "" ? null : validation.data.imageUrl,
       },
     });

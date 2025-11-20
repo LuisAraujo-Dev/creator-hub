@@ -7,9 +7,9 @@ import { Partner } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/src/components/data-table";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { PartnerForm } from "./components/partner-form";
+import { DataTable } from "@/components/data-table";
 
 
 interface Props {

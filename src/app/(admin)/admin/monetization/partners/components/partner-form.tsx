@@ -2,18 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Partner } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
-import { ImageUpload } from "@/src/components/ui/image-upload";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Label } from "../../../../../../../components/ui/label";
+import { Input } from "../../../../../../../components/ui/input";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Switch } from "@radix-ui/react-switch";
+
 
 const partnerSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),

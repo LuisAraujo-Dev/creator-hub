@@ -7,23 +7,10 @@ import { Product } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { ProductForm } from "./product-form";
-import { Button } from "@/src/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../../components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 
 interface CellActionProps {
   data: Product;
@@ -35,13 +22,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [openEdit, setOpenEdit] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Copiar ID ou Link
   const onCopyLink = () => {
     navigator.clipboard.writeText(data.affiliateUrl);
     toast.success("Link de afiliado copiado!");
   };
 
-  // Deletar Produto
   const onDelete = async () => {
     try {
       setLoading(true);
@@ -59,7 +44,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      {/* 1. Modal de Confirmação de Exclusão (Dialog Centralizado) */}
       <Dialog open={openDelete} onOpenChange={setOpenDelete}>
         <DialogContent>
           <DialogHeader>
@@ -80,18 +64,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DialogContent>
       </Dialog>
 
-      {/* 2. Formulário de Edição (Sheet Lateral) */}
-      {/* Renderizamos condicionalmente ou apenas controlamos pelo isOpen */}
       <ProductForm 
         isOpen={openEdit}
         onClose={() => {
             setOpenEdit(false);
-            // Opcional: router.refresh() aqui se quiser garantir dados frescos ao fechar sem salvar
         }}
         initialData={data}
       />
 
-      {/* 3. Menu de Ações (Dropdown) */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0 text-gray-500 hover:text-black">
@@ -110,7 +90,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <ExternalLink className="mr-2 h-4 w-4" /> Ver na Loja
           </DropdownMenuItem>
 
-          {/* Separador visual */}
           <div className="h-px bg-gray-100 my-1" />
 
           <DropdownMenuItem onClick={() => setOpenEdit(true)} className="cursor-pointer">

@@ -8,8 +8,8 @@ import { Coupon } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { CouponForm } from "./components/coupon-form";
 import { columns } from "./components/columns"; 
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/src/components/data-table";
+import { Separator } from "../../../../../../components/ui/separator";
+import { DataTable } from "@/components/data-table";
 
 interface Props {
   data: Coupon[];

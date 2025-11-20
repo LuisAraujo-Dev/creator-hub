@@ -2,17 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Coupon } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Label } from "../../../../../../../components/ui/label";
+import { Input } from "../../../../../../../components/ui/input";
+import { Switch } from "@radix-ui/react-switch";
 
 const couponSchema = z.object({
   storeName: z.string().min(2, "O nome da loja é obrigatório."),
