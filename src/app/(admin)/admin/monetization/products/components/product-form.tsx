@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Product } from "@prisma/client";
@@ -15,8 +9,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react"; 
 import { Switch } from "@/components/ui/switch";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
+import { ImageUpload } from "@/src/components/ui/image-upload";
+
 
 const productSchema = z.object({
   title: z.string().min(3, "O título precisa ter pelo menos 3 caracteres."),
@@ -101,12 +98,10 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
       });
 
       if (response.ok) {
-        console.log(`Produto ${isEditMode ? 'atualizado' : 'criado'} com sucesso!`);
         form.reset(); 
         onClose(); 
       } else {
-        const errorData = await response.json();
-        console.error("Falha ao salvar produto:", errorData);
+        console.error("Falha ao salvar");
       }
     } catch (error) {
       console.error("Erro de rede:", error);
@@ -116,70 +111,86 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>{isEditMode ? "Editar Produto" : "Novo Produto de Afiliado"}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          
-          {/* Título */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Nome do Produto</Label>
-            <Input id="title" placeholder="Tênis de Corrida XYZ" {...form.register("title")} />
-            {form.formState.errors.title && <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>}
-          </div>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="right" className="sm:max-w-lg w-full p-0 flex flex-col bg-white h-full">
+        
+        {/* Header Fixo */}
+        <div className="p-6 border-b border-gray-100">
+            <SheetHeader>
+            <SheetTitle>{isEditMode ? "Editar Produto" : "Novo Produto"}</SheetTitle>
+            <SheetDescription>
+                {isEditMode ? "Faça alterações no seu produto." : "Adicione um novo link de afiliado para sua audiência."}
+            </SheetDescription>
+            </SheetHeader>
+        </div>
 
-          {/* URL Afiliado */}
-          <div className="space-y-2">
-            <Label htmlFor="affiliateUrl">Link de Afiliado (URL Completa)</Label>
-            <Input id="affiliateUrl" placeholder="https://loja.com/produto?aff=123" {...form.register("affiliateUrl")} />
-            {form.formState.errors.affiliateUrl && <p className="text-sm text-red-500">{form.formState.errors.affiliateUrl.message}</p>}
-          </div>
-
-          {/* URL Imagem */}
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl">URL da Imagem (Opcional)</Label>
-            <Input id="imageUrl" placeholder="https://imagens.com/produto.jpg" {...form.register("imageUrl")} />
-            {form.formState.errors.imageUrl && <p className="text-sm text-red-500">{form.formState.errors.imageUrl.message}</p>}
-          </div>
-
-          {/* Preço e Descrição */}
-          <div className="grid grid-cols-2 gap-4">
+        {/* Corpo com Scroll */}
+        <div className="flex-1 overflow-y-auto p-6">
+            <form id="product-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            
             <div className="space-y-2">
-                <Label htmlFor="price">Preço (R$)</Label>
-                <Input id="price" placeholder="R$ 599,90" {...form.register("price")} />
+                <Label htmlFor="title">Nome do Produto</Label>
+                <Input id="title" placeholder="Ex: Tênis de Corrida XYZ" {...form.register("title")} />
+                {form.formState.errors.title && <p className="text-xs text-red-500">{form.formState.errors.title.message}</p>}
             </div>
+
             <div className="space-y-2">
-                <Label htmlFor="description">Descrição Curta</Label>
-                <Input id="description" placeholder="Até 200 caracteres..." {...form.register("description")} />
+                <Label htmlFor="affiliateUrl">Link de Afiliado</Label>
+                <Input id="affiliateUrl" placeholder="https://loja.com/..." {...form.register("affiliateUrl")} />
+                {form.formState.errors.affiliateUrl && <p className="text-xs text-red-500">{form.formState.errors.affiliateUrl.message}</p>}
             </div>
-          </div>
 
-          {/* Status Ativo */}
-          <div className="flex items-center justify-between p-3 border rounded-lg">
-            <Label htmlFor="active" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Produto Ativo
-              <p className="text-xs text-muted-foreground mt-1">Se desativado, não aparecerá na página pública.</p>
-            </Label>
-            <Switch
-              id="active"
-              checked={form.watch('active')}
-              onCheckedChange={(val) => form.setValue('active', val, { shouldValidate: true })}
-            />
-          </div>
+            <div className="space-y-2">
+                <Label>Imagem</Label>
+                <div className="flex justify-center border rounded-md p-4 bg-gray-50/50">
+                    <ImageUpload
+                        value={form.watch("imageUrl") || ""}
+                        onChange={(url) => form.setValue("imageUrl", url, { shouldValidate: true })}
+                        disabled={isSubmitting}
+                    />
+                </div>
+            </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {isEditMode ? "Salvar Edição" : "Criar Produto"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="price">Preço</Label>
+                    <Input id="price" placeholder="R$ 599,90" {...form.register("price")} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="description">Descrição</Label>
+                    <Input id="description" placeholder="Breve descrição..." {...form.register("description")} />
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50/50">
+                <Label htmlFor="active" className="text-sm font-medium cursor-pointer flex flex-col">
+                    <span>Ativo</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">Visível publicamente</span>
+                </Label>
+                <Switch
+                    id="active"
+                    checked={form.watch('active')}
+                    onCheckedChange={(val) => form.setValue('active', val, { shouldValidate: true })}
+                />
+            </div>
+
+            </form>
+        </div>
+
+        {/* Footer Fixo */}
+        <div className="p-6 border-t border-gray-100 bg-gray-50/50 mt-auto">
+            <SheetFooter>
+                <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
+                    Cancelar
+                </Button>
+                <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting} className="w-full sm:w-auto">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {isEditMode ? "Salvar Alterações" : "Criar Produto"}
+                </Button>
+            </SheetFooter>
+        </div>
+
+      </SheetContent>
+    </Sheet>
   );
 }
