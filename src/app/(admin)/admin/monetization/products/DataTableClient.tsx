@@ -4,20 +4,18 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Product } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-
 import { ProductForm } from "./components/product-form";
+import { columns } from "./components/columns"; 
+import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/src/components/data-table";
-import { Separator } from "@radix-ui/react-dropdown-menu";
 
 interface Props {
   data: Product[];
-  columns: ColumnDef<Product>[];
 }
 
-export default function DataTableClient({ data, columns }: Props) {
+export default function DataTableClient({ data }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
