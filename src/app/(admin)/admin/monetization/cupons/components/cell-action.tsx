@@ -7,7 +7,6 @@ import { Coupon } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CouponForm } from "./coupon-form";
+import { Button } from "@/src/components/ui/button";
 
 interface CellActionProps {
   data: Coupon;
@@ -67,7 +67,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DialogHeader>
             <DialogTitle>Excluir Cupom?</DialogTitle>
             <DialogDescription>
-              O cupom <span className="font-bold text-red-600">{data.code}</span> da loja {data.storeName} será removido permanentemente.
+              O cupom <span className="font-bold text-red-600">{data.code}</span> será removido permanentemente.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -82,7 +82,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DialogContent>
       </Dialog>
 
-      {/* 2. Modal de Edição (Reutiliza o CouponForm) */}
+      {/* 2. Modal de Edição (Reutiliza o CouponForm com Sheet) */}
       <CouponForm 
         isOpen={openEdit}
         onClose={(didSave) => {
