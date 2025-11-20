@@ -9,11 +9,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react"; 
+import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner"; 
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
 import { ImageUpload } from "@/src/components/ui/image-upload";
-
 
 const productSchema = z.object({
   title: z.string().min(3, "O título precisa ter pelo menos 3 caracteres."),
@@ -98,13 +98,17 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
       });
 
       if (response.ok) {
+        toast.success(isEditMode ? "Produto atualizado!" : "Produto criado!");
         form.reset(); 
         onClose(); 
       } else {
-        console.error("Falha ao salvar");
+        const error = await response.json();
+        console.error(error);
+        toast.error("Erro ao salvar. Verifique os dados.");
       }
     } catch (error) {
       console.error("Erro de rede:", error);
+      toast.error("Erro de conexão.");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,17 +118,15 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="sm:max-w-lg w-full p-0 flex flex-col bg-white h-full">
         
-        {/* Header Fixo */}
         <div className="p-6 border-b border-gray-100">
             <SheetHeader>
             <SheetTitle>{isEditMode ? "Editar Produto" : "Novo Produto"}</SheetTitle>
             <SheetDescription>
-                {isEditMode ? "Faça alterações no seu produto." : "Adicione um novo link de afiliado para sua audiência."}
+                {isEditMode ? "Faça alterações no seu produto." : "Adicione um novo link de afiliado."}
             </SheetDescription>
             </SheetHeader>
         </div>
 
-        {/* Corpo com Scroll */}
         <div className="flex-1 overflow-y-auto p-6">
             <form id="product-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
@@ -177,7 +179,6 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
             </form>
         </div>
 
-        {/* Footer Fixo */}
         <div className="p-6 border-t border-gray-100 bg-gray-50/50 mt-auto">
             <SheetFooter>
                 <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
