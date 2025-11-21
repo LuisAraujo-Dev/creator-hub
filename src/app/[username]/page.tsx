@@ -255,11 +255,27 @@ export default async function UserProfile({ params }: PageProps) {
           </div>
         )}
 
-        <footer className="mt-auto pt-12 pb-6 text-center">
+        <footer className="mt-auto pt-12 pb-24 text-center">
            <p className="text-[10px] text-gray-400 font-medium flex items-center justify-center gap-1">
              Powered by <span className="font-bold text-gray-600">CreatorHub</span>
            </p>
         </footer>
+
+        <div className="fixed bottom-4 left-0 right-0 flex justify-center px-4 z-50 pointer-events-none">
+            <div className="bg-gray-900/90 backdrop-blur-md text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-4 pointer-events-auto transform transition-all hover:scale-105 hover:bg-gray-900 border border-white/10 max-w-md w-full justify-between">
+                <div className="flex flex-col text-left">
+                    <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Gostou do CreatorHub?</span>
+                    <span className="text-xs font-bold">Crie seu o seu perfil</span>
+                </div>
+                <a 
+                    href="https://wa.me/5561993605595?text=Ola%20Luis%2C%20gostaria%20de%20melhorar%20a%20experiencia%20dos%20meus%20seguidores%20e%20me%20juntar%20ao%20CreatorHub" 
+                    className="bg-white text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-200 transition-colors"
+                >
+                    Começar
+                </a>
+            </div>
+        </div>
+
       </div>
     </div>
   );
