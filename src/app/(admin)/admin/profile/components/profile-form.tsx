@@ -1,4 +1,4 @@
-//src/app/(admin)/admin/profile/profile-form.tsx
+//src/app/(admin)/admin/profile/components/profile-form.tsx
 "use client";
 
 import { useState } from "react";
@@ -16,11 +16,11 @@ import {
   Instagram, Facebook, Linkedin, Twitter, Youtube, 
   MessageCircle, Globe, Send, Gamepad2, Camera, Video, Ghost 
 } from "lucide-react";
-import { Label } from "../../../../../components/ui/label";
-import { Input } from "../../../../../components/ui/input";
-import { Textarea } from "../../../../../components/ui/textarea";
-import { Switch } from "../../../../../components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;
@@ -46,6 +46,8 @@ const SOCIAL_CONFIG = [
     { id: "github", label: "GitHub", icon: Globe, placeholder: "https://github.com/..." },
 ] as const;
 
+const optionalString = z.string().optional().or(z.literal('')).nullable();
+
 const profileSchema = z.object({
   name: z.string({
     required_error: "O nome é obrigatório.",
@@ -55,26 +57,26 @@ const profileSchema = z.object({
   }).max(50, {
     message: "O nome pode ter no máximo 50 caracteres.",
   }),
-  bio: z.string().max(160, "A bio deve ter no máximo 160 caracteres.").optional(),
-  avatarUrl: z.string().optional().or(z.literal('')),
+  bio: z.string().max(160, "A bio deve ter no máximo 160 caracteres.").optional().or(z.literal('')).nullable(),
+  avatarUrl: optionalString,
   
-  instagram: z.string().optional(),
-  tiktok: z.string().optional(),
-  youtube: z.string().optional(),
-  facebook: z.string().optional(),
-  twitter: z.string().optional(),
-  linkedin: z.string().optional(),
-  whatsapp: z.string().optional(),
-  telegram: z.string().optional(),
-  discord: z.string().optional(),
-  twitch: z.string().optional(),
-  pinterest: z.string().optional(),
-  strava: z.string().optional(),
-  kwai: z.string().optional(),
-  vsco: z.string().optional(),
-  snapchat: z.string().optional(),
-  onlyfans: z.string().optional(),
-  github: z.string().optional(),
+  instagram: optionalString,
+  tiktok: optionalString,
+  youtube: optionalString,
+  facebook: optionalString,
+  twitter: optionalString,
+  linkedin: optionalString,
+  whatsapp: optionalString,
+  telegram: optionalString,
+  discord: optionalString,
+  twitch: optionalString,
+  pinterest: optionalString,
+  strava: optionalString,
+  kwai: optionalString,
+  vsco: optionalString,
+  snapchat: optionalString,
+  onlyfans: optionalString,
+  github: optionalString,
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -98,14 +100,26 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         return initialActive;
     });
 
+    const prepareDefaultValues = () => {
+        const socials = initialData?.socialLinks as any || {};
+        const sanitizedSocials: Record<string, any> = {};
+
+        SOCIAL_CONFIG.forEach((net) => {
+            const val = socials[net.id];
+            sanitizedSocials[net.id] = val === null || val === undefined ? "" : val;
+        });
+
+        return {
+            name: initialData?.name || "",
+            bio: initialData?.bio || "", 
+            avatarUrl: initialData?.avatarUrl || "", 
+            ...sanitizedSocials
+        };
+    };
+
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
-        defaultValues: {
-            name: initialData?.name || "",
-            bio: initialData?.bio || "",
-            avatarUrl: initialData?.avatarUrl || "",
-            ...(initialData?.socialLinks as any || {})
-        },
+        defaultValues: prepareDefaultValues(),
     });
 
     const toggleNetwork = (id: string, active: boolean) => {
@@ -129,8 +143,18 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         }
     }
 
+    function onInvalid(errors: any) {
+        console.error("Erros de validação:", errors);
+        const firstError = Object.values(errors)[0] as any;
+        if (firstError) {
+            toast.error(`Erro no campo: ${firstError.message || "Verifique os dados"}`);
+        } else {
+            toast.error("Existem erros no formulário. Verifique os campos.");
+        }
+    }
+
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8 w-full">
             
             <Card>
                 <CardHeader>
