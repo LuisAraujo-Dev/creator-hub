@@ -15,7 +15,7 @@ import { Label } from "../../../../../../components/ui/label";
 import { Input } from "../../../../../../components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Switch } from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 
 const productSchema = z.object({
   title: z.string().min(3, "O título precisa ter pelo menos 3 caracteres."),

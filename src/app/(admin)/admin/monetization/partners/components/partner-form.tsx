@@ -15,8 +15,7 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { Label } from "../../../../../../components/ui/label";
 import { Input } from "../../../../../../components/ui/input";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Switch } from "@radix-ui/react-switch";
-
+import { Switch } from "@/components/ui/switch";
 
 const partnerSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),

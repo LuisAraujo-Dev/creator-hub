@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Label } from "../../../../../../components/ui/label";
 import { Input } from "../../../../../../components/ui/input";
-import { Switch } from "@radix-ui/react-switch";
+import { Switch } from "@/components/ui/switch";
 
 const couponSchema = z.object({
   storeName: z.string().min(2, "O nome da loja é obrigatório."),
