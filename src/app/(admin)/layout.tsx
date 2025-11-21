@@ -69,7 +69,8 @@ export default function AdminLayout({
                 <ShoppingBag size={18} />
                 <span className="hidden md:inline">Produtos</span>
               </Link>
-              <Link href="/admin/monetization/cupons" className={getLinkClass("/admin/monetization/cupons")} title="Cupons">
+              {/* CORREÇÃO AQUI: De 'cupons' para 'coupons' */}
+              <Link href="/admin/monetization/coupons" className={getLinkClass("/admin/monetization/coupons")} title="Cupons">
                 <Tag size={18} />
                 <span className="hidden md:inline">Cupons</span>
               </Link>
