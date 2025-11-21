@@ -11,8 +11,13 @@ import { toast } from "sonner";
 import { ProductForm } from "./product-form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuLabel, 
+  DropdownMenuItem 
+} from "@/components/ui/dropdown-menu";
 
 interface CellActionProps {
   data: Product;

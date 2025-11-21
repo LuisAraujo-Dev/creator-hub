@@ -10,7 +10,13 @@ import { toast } from "sonner";
 
 import { CouponForm } from "./coupon-form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../components/ui/dialog";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuLabel, 
+  DropdownMenuItem 
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
 
