@@ -1,7 +1,7 @@
+//src/app/(admin)/admin/settings/page.tsx
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { SettingsForm } from "./components/settings-form";
 import prisma from "@/lib/prisma";
-
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 

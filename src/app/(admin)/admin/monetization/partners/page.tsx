@@ -1,3 +1,4 @@
+// src/app/(admin)/admin/monetization/partners/page.tsx
 import prisma from "@/lib/prisma";
 import { columns } from "./columns";
 import DataTableClient from "./DataTableClient";

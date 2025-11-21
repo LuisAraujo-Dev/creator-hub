@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/coupons/components/coupon-form.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,8 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Label } from "../../../../../../../components/ui/label";
-import { Input } from "../../../../../../../components/ui/input";
+import { Label } from "../../../../../../components/ui/label";
+import { Input } from "../../../../../../components/ui/input";
 import { Switch } from "@radix-ui/react-switch";
 
 const couponSchema = z.object({
@@ -111,7 +112,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
     <Sheet open={isOpen} onOpenChange={() => onClose(false)}>
       <SheetContent side="right" className="sm:max-w-lg w-full p-0 flex flex-col bg-white h-full">
         
-        {/* Header Fixo */}
         <div className="p-6 border-b border-gray-100">
             <SheetHeader>
             <SheetTitle>{isEditMode ? "Editar Cupom" : "Novo Cupom"}</SheetTitle>
@@ -121,7 +121,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
             </SheetHeader>
         </div>
 
-        {/* Corpo com Scroll */}
         <div className="flex-1 overflow-y-auto p-6">
             <form id="coupon-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
@@ -165,7 +164,6 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
             </form>
         </div>
 
-        {/* Footer Fixo */}
         <div className="p-6 border-t border-gray-100 bg-gray-50/50 mt-auto">
             <SheetFooter>
                 <Button type="button" variant="outline" onClick={() => onClose(false)} className="w-full sm:w-auto">

@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/coupons/DataTableClient.tsx
 "use client";
 
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { Coupon } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { CouponForm } from "./components/coupon-form";
 import { columns } from "./components/columns"; 
-import { Separator } from "../../../../../../components/ui/separator";
+import { Separator } from "../../../../../components/ui/separator";
 import { DataTable } from "@/components/data-table";
 
 interface Props {

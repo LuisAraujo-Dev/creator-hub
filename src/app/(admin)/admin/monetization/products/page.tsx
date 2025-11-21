@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/products/page.tsx
 import prisma from "@/lib/prisma";
 import DataTableClient from "./DataTableClient";
 

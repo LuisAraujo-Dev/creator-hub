@@ -1,3 +1,4 @@
+// src/app/(admin)/admin/monetization/partners/components/cell-action.tsx
 "use client";
 
 import { useState } from "react";
@@ -7,9 +8,9 @@ import { Partner } from "@prisma/client";
 
 
 import { PartnerForm } from "./partner-form";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../../components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../../../../components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../../../../../../components/ui/dropdown-menu";
 
 
 interface CellActionProps {

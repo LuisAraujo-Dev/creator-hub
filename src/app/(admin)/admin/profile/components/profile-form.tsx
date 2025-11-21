@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/profile/profile-form.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,11 +16,11 @@ import {
   Instagram, Facebook, Linkedin, Twitter, Youtube, 
   MessageCircle, Globe, Send, Gamepad2, Camera, Video, Ghost 
 } from "lucide-react";
-import { Label } from "../../../../../../components/ui/label";
-import { Input } from "../../../../../../components/ui/input";
-import { Textarea } from "../../../../../../components/ui/textarea";
-import { Switch } from "../../../../../../components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../../components/ui/card";
+import { Label } from "../../../../../components/ui/label";
+import { Input } from "../../../../../components/ui/input";
+import { Textarea } from "../../../../../components/ui/textarea";
+import { Switch } from "../../../../../components/ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../components/ui/card";
 
 type UserWithSocials = User & {
     socialLinks: SocialLinks | null;

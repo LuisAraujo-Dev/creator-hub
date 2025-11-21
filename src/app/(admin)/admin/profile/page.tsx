@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/profile/page.tsx
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { ProfileForm } from "./components/profile-form"; 
 import prisma from "@/lib/prisma";

@@ -1,3 +1,4 @@
+// src/app/(admin)/admin/monetization/partners/DataTableClient.tsx
 "use client";
 
 import { useState } from "react";

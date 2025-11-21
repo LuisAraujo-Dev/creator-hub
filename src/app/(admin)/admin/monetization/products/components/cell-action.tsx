@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/products/components/cell-action.tsx
 "use client";
 
 import { useState } from "react";
@@ -8,9 +9,10 @@ import axios from "axios";
 import { toast } from "sonner";
 
 import { ProductForm } from "./product-form";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../../components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 
 interface CellActionProps {
   data: Product;

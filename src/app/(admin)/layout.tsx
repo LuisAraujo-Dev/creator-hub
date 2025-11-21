@@ -1,7 +1,8 @@
+//src/app/(admin)/layout.tsx
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   User, 
@@ -12,6 +13,7 @@ import {
   Tag, 
   Handshake
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "../../../lib/utils";
 
 export default function AdminLayout({
@@ -20,72 +22,83 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
-  // Função para estilizar links
+  const isActiveLink = (path: string) => {
+    if (path === "/admin") {
+      return pathname === "/admin";
+    }
+    return pathname?.startsWith(path);
+  };
+
   const getLinkClass = (path: string) => {
-    const isActive = pathname === path;
+    const active = isActiveLink(path);
     return cn(
-      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition",
-      isActive 
-        ? "bg-blue-50 text-blue-600" 
-        : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
+      active 
+        ? "bg-blue-100 text-blue-700 shadow-sm" 
+        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900" 
     );
+  };
+
+  const handleLogout = () => {
+    toast.success("Você saiu do sistema.");
+    router.push("/");
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       
-      {/* HEADER FIXO E HORIZONTAL (Responsivo sem Hambúrguer) */}
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
             
-            {/* LADO ESQUERDO: LOGO */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 cursor-default">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">
                 C
               </div>
               <span className="text-lg font-bold tracking-tight hidden md:block">CreatorHub</span>
             </div>
 
-            {/* CENTRO: NAVEGAÇÃO PRINCIPAL (Scroll horizontal se necessário) */}
-            <nav className="flex items-center gap-1 flex-1 justify-center overflow-x-auto no-scrollbar">
+            <nav className="flex items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar py-1 px-2 max-w-full">
               <Link href="/admin" className={getLinkClass("/admin")} title="Dashboard">
-                <LayoutDashboard size={20} />
+                <LayoutDashboard size={18} />
                 <span className="hidden md:inline">Dashboard</span>
               </Link>
               <Link href="/admin/monetization/products" className={getLinkClass("/admin/monetization/products")} title="Produtos">
-                <ShoppingBag size={20} />
+                <ShoppingBag size={18} />
                 <span className="hidden md:inline">Produtos</span>
               </Link>
-              <Link href="/admin/monetization/coupons" className={getLinkClass("/admin/monetization/coupons")} title="Coupons">
-                <Tag size={20} />
+              <Link href="/admin/monetization/cupons" className={getLinkClass("/admin/monetization/cupons")} title="Cupons">
+                <Tag size={18} />
                 <span className="hidden md:inline">Cupons</span>
               </Link>
               <Link href="/admin/monetization/partners" className={getLinkClass("/admin/monetization/partners")} title="Parceiros">
-                <Handshake size={20} />
+                <Handshake size={18} />
                 <span className="hidden md:inline">Parceiros</span>
               </Link>
             </nav>
 
-            {/* LADO DIREITO: AÇÕES DO USUÁRIO */}
-            <div className="flex items-center gap-1 md:gap-2 shrink-0">
-               {/* Botão "Ver Página" (Escondido em telas muito pequenas pra economizar espaço) */}
+            <div className="flex items-center gap-1 shrink-0">
                <Link 
                   href="/luisrun" 
                   target="_blank" 
-                  className="hidden sm:flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-full mr-2"
+                  className="hidden sm:flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-full mr-2 border border-blue-100"
                >
                   <ExternalLink size={14} /> <span className="hidden lg:inline">Ver página</span>
                </Link>
 
-               <Link href="/admin/profile" className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition" title="Perfil">
+               <Link href="/admin/profile" className={cn("p-2 rounded-full transition", isActiveLink("/admin/profile") ? "text-blue-600 bg-blue-50" : "text-gray-500 hover:bg-gray-100")} title="Perfil">
                   <User size={20} />
                </Link>
-               <Link href="/admin/settings" className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition" title="Configurações">
+               <Link href="/admin/settings" className={cn("p-2 rounded-full transition", isActiveLink("/admin/settings") ? "text-blue-600 bg-blue-50" : "text-gray-500 hover:bg-gray-100")} title="Configurações">
                   <Settings size={20} />
                </Link>
-               <button className="p-2 text-red-500 hover:bg-red-50 rounded-full transition" title="Sair">
+               <button 
+                 onClick={handleLogout}
+                 className="p-2 text-red-500 hover:bg-red-50 rounded-full transition" 
+                 title="Sair"
+               >
                   <LogOut size={20} />
                </button>
             </div>
@@ -94,7 +107,6 @@ export default function AdminLayout({
         </div>
       </header>
 
-      {/* CONTEÚDO PRINCIPAL */}
       <main className="flex-1 w-full bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
             {children}

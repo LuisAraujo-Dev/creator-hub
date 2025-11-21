@@ -1,3 +1,4 @@
+// src/app/api/profile/route.ts
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -77,7 +78,6 @@ export async function PUT(request: Request) {
         onlyfans: data.onlyfans, showOnlyfans: !!data.onlyfans,
       };
 
-      // 3. Atualiza ou Cria (Upsert) os SocialLinks
       const updatedSocials = await tx.socialLinks.upsert({
         where: { userId: MOCK_USER_ID },
         create: { userId: MOCK_USER_ID, ...socialData },

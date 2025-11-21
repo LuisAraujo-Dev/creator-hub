@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/products/components/product-form.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -10,8 +11,8 @@ import * as z from "zod";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner"; 
-import { Label } from "../../../../../../../components/ui/label";
-import { Input } from "../../../../../../../components/ui/input";
+import { Label } from "../../../../../../components/ui/label";
+import { Input } from "../../../../../../components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Switch } from "@radix-ui/react-switch";

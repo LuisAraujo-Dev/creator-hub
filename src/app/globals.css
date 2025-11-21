@@ -1,14 +1,11 @@
+/* src/app/globals.css */
 @import "tailwindcss";
 
-/* Plugin de animações (obrigatório para Shadcn no v4) */
 @plugin "tailwindcss-animate";
 
-/* Estilos do UploadThing */
 @import "@uploadthing/react/styles.css";
 
-/* Configuração do Tema (Substitui o tailwind.config.ts) */
 @theme {
-  /* Mapeia as variáveis HSL para cores do Tailwind */
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
@@ -45,12 +42,10 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  /* Raios de borda */
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  /* Animações */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
@@ -64,7 +59,6 @@
   }
 }
 
-/* Variáveis CSS (Design Tokens) */
 @layer base {
   :root {
     --background: 0 0% 100%;

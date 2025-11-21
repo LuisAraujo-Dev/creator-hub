@@ -1,3 +1,4 @@
+// src/app/api/coupons/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import * as z from "zod";

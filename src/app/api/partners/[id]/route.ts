@@ -1,3 +1,4 @@
+// src/app/api/partners/[id]/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";

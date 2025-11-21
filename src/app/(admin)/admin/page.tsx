@@ -1,9 +1,10 @@
+//src/app/(admin)/admin/page.tsx
 import { CreditCard, DollarSign, MousePointer2, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import prisma from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 
 const MOCK_USER_ID = "clerk_user_id_mock_1";
 

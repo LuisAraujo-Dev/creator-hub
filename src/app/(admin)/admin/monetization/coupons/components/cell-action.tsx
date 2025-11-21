@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/coupons/components/cell-actions.tsx
 "use client";
 
 import { useState } from "react";
@@ -7,12 +8,10 @@ import { Coupon } from "@prisma/client";
 import axios from "axios";
 import { toast } from "sonner";
 
-
-
 import { CouponForm } from "./coupon-form";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../../components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../../../../../components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 
 interface CellActionProps {
@@ -68,7 +67,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DialogContent>
       </Dialog>
 
-      {/* 2. Modal de Edição (Reutiliza o CouponForm com Sheet) */}
       <CouponForm 
         isOpen={openEdit}
         onClose={(didSave) => {
@@ -78,7 +76,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         initialData={data}
       />
 
-      {/* 3. Menu Dropdown da Tabela */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0 text-gray-500 hover:text-black">
@@ -93,7 +90,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <Copy className="mr-2 h-4 w-4" /> Copiar Código
           </DropdownMenuItem>
 
-          {/* Só mostra link externo se o cupom tiver link */}
           {data.link && (
             <DropdownMenuItem onClick={() => window.open(data.link!, '_blank')} className="cursor-pointer">
                 <ExternalLink className="mr-2 h-4 w-4" /> Visitar Loja

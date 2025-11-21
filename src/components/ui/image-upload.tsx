@@ -1,3 +1,4 @@
+// src/components/ui/image-upload.tsx
 "use client";
 
 import { X } from "lucide-react";

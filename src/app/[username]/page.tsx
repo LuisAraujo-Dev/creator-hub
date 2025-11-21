@@ -1,3 +1,4 @@
+// src/app/[username]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
@@ -84,7 +85,6 @@ export default async function UserProfile({ params }: PageProps) {
         </header>
 
         <div className="flex justify-center gap-3 mt-6 flex-wrap px-6">
-            {/* Redes Principais */}
             <SocialIcon show={s?.showInsta} link={s?.instagram} icon={FaInstagram} color="#E1306C" bgClass="hover:bg-pink-50" />
             <SocialIcon show={s?.showTiktok} link={s?.tiktok} icon={FaTiktok} color="#000000" bgClass="hover:bg-gray-100" />
             <SocialIcon show={s?.showYoutube} link={s?.youtube} icon={FaYoutube} color="#FF0000" bgClass="hover:bg-red-50" />
@@ -93,18 +93,15 @@ export default async function UserProfile({ params }: PageProps) {
             <SocialIcon show={s?.showLinkedin} link={s?.linkedin} icon={FaLinkedin} color="#0A66C2" bgClass="hover:bg-blue-50" />
             <SocialIcon show={s?.showPinterest} link={s?.pinterest} icon={FaPinterest} color="#BD081C" bgClass="hover:bg-red-50" />
             
-            {/* Mensageiros */}
             <SocialIcon show={s?.showWhatsapp} link={s?.whatsapp} icon={FaWhatsapp} color="#25D366" bgClass="hover:bg-green-50" />
             <SocialIcon show={s?.showTelegram} link={s?.telegram} icon={FaTelegram} color="#0088CC" bgClass="hover:bg-sky-50" />
             <SocialIcon show={s?.showDiscord} link={s?.discord} icon={FaDiscord} color="#5865F2" bgClass="hover:bg-indigo-50" />
             
-            {/* Nicho & Outros */}
             <SocialIcon show={s?.showTwitch} link={s?.twitch} icon={FaTwitch} color="#9146FF" bgClass="hover:bg-purple-50" />
             <SocialIcon show={s?.showStrava} link={s?.strava} icon={FaStrava} color="#FC4C02" bgClass="hover:bg-orange-50" />
             <SocialIcon show={s?.showSnapchat} link={s?.snapchat} icon={FaSnapchatGhost} color="#FFFC00" bgClass="hover:bg-yellow-50" />
             <SocialIcon show={s?.showGithub} link={s?.github} icon={FaGithub} color="#181717" bgClass="hover:bg-gray-100" />
             
-            {/* Ícones Especiais */}
             <SocialIcon show={s?.showKwai} link={s?.kwai} icon={SiKuaishou} color="#FF8F00" bgClass="hover:bg-orange-50" />
             <SocialIcon show={s?.showVsco} link={s?.vsco} icon={SiVsco} color="#000000" bgClass="hover:bg-gray-100" />
             <SocialIcon show={s?.showOnlyfans} link={s?.onlyfans} icon={SiOnlyfans} color="#00AFF0" bgClass="hover:bg-sky-50" />

@@ -1,6 +1,6 @@
+//src/app/(admin)/admin/settings/components/settings-form.tsx
 "use client";
 
-// Adicionado React explicitamente para ajudar o intellisense do VS Code
 import React, { useState } from "react"; 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,12 +10,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "../../../../../../components/ui/input";
-import { Label } from "../../../../../../components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../../components/ui/card";
+import { Input } from "../../../../../components/ui/input";
+import { Label } from "../../../../../components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../components/ui/card";
 
 const settingsSchema = z.object({
-  // Mantemos o new RegExp para evitar ambiguidade de parser
   themeColor: z.string().min(4).regex(new RegExp("^#"), "Deve começar com #"),
 });
 

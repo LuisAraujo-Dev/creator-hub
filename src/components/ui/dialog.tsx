@@ -1,9 +1,10 @@
+// src/components/ui/dialog.tsx
 "use client"
 
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react" // Correção: XIcon -> X (em versões novas do lucide)
-import { cn } from "../../lib/utils"
+import { X } from "lucide-react" 
+import { cn } from "../../../lib/utils"
 
 
 function Dialog({
@@ -49,7 +50,7 @@ function DialogOverlay({
 function DialogContent({
   className,
   children,
-  showCloseButton = true, // Adicionado suporte a prop customizada para esconder X se quiser
+  showCloseButton = true, 
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
   return (
@@ -58,9 +59,6 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          // CORREÇÃO DE CENTRALIZAÇÃO:
-          // Substituído 'translate-x-[-50%]' por '-translate-x-1/2' (sintaxe padrão Tailwind)
-          // Isso garante que o modal volte 50% do seu tamanho para a esquerda/cima.
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg",
           className
         )}

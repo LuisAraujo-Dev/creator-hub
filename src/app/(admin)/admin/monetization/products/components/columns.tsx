@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/products/components/columns.tsx
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";

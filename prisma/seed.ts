@@ -12,13 +12,12 @@ async function main() {
     data: {
       id: "clerk_user_id_mock_1",
       email: 'demo@creatorhub.com',
-      username: 'luisrun', // Será acessado via localhost:3000/luisrun
+      username: 'luisrun', 
       name: 'Luís Runner',
       bio: 'Compartilhando minha jornada de 365 dias de corrida. Fé e persistência! 🏃‍♂️🔥',
       avatarUrl: 'https://github.com/shadcn.png', 
       themeColor: '#f97316', 
       
-      // 3. Redes Sociais
       socialLinks: {
         create: {
           instagram: 'https://instagram.com',
@@ -32,7 +31,6 @@ async function main() {
         }
       },
 
-      // 4. Produtos (Afiliados)
       products: {
         create: [
           {
@@ -52,7 +50,6 @@ async function main() {
         ]
       },
 
-      // 5. Cupons
       coupons: {
         create: [
           {

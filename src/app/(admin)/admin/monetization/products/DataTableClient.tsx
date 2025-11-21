@@ -1,3 +1,4 @@
+//src/app/(admin)/admin/monetization/products/DataTableClient.tsx
 "use client";
 
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { Product } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { ProductForm } from "./components/product-form";
 import { columns } from "./components/columns"; 
-import { Separator } from "../../../../../../components/ui/separator";
+import { Separator } from "../../../../../components/ui/separator";
 import { DataTable } from "@/components/data-table";
 
 interface Props {
