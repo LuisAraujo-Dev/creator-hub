@@ -1,9 +1,8 @@
 // src/app/api/partners/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import * as z from "zod";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 const partnerSchema = z.object({
   name: z.string().min(2, "Nome do parceiro é obrigatório"),
@@ -14,8 +13,14 @@ const partnerSchema = z.object({
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const partners = await prisma.partner.findMany({
-      where: { userId: MOCK_USER_ID },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -31,6 +36,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
     const validation = partnerSchema.safeParse(body);
 
@@ -45,7 +56,7 @@ export async function POST(request: Request) {
 
     const newPartner = await prisma.partner.create({
       data: {
-        userId: MOCK_USER_ID,
+        userId,
         name: data.name,
         siteUrl: data.siteUrl,
         logoUrl: data.logoUrl || null, 

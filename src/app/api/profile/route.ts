@@ -1,38 +1,45 @@
 // src/app/api/profile/route.ts
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
+
+const optionalString = z.string().optional().or(z.literal('')).nullable();
 
 const profileSchema = z.object({
   name: z.string().min(2),
-  bio: z.string().optional(),
-  avatarUrl: z.string().optional().or(z.literal('')),
+  bio: z.string().optional().or(z.literal("")).nullable(),
+  avatarUrl: optionalString,
 
-  instagram: z.string().optional().or(z.literal('')),
-  tiktok: z.string().optional().or(z.literal('')),
-  youtube: z.string().optional().or(z.literal('')),
-  twitter: z.string().optional().or(z.literal('')),
-  strava: z.string().optional().or(z.literal('')),
-  linkedin: z.string().optional().or(z.literal('')),
-  github: z.string().optional().or(z.literal('')),
-  whatsapp: z.string().optional().or(z.literal('')),
-  facebook: z.string().optional().or(z.literal('')),
-  pinterest: z.string().optional().or(z.literal('')),
-  telegram: z.string().optional().or(z.literal('')),
-  discord: z.string().optional().or(z.literal('')),
-  twitch: z.string().optional().or(z.literal('')),
-  kwai: z.string().optional().or(z.literal('')),
-  vsco: z.string().optional().or(z.literal('')),
-  snapchat: z.string().optional().or(z.literal('')),
-  onlyfans: z.string().optional().or(z.literal('')),
+  instagram: optionalString,
+  tiktok: optionalString,
+  youtube: optionalString,
+  twitter: optionalString,
+  strava: optionalString,
+  linkedin: optionalString,
+  github: optionalString,
+  whatsapp: optionalString,
+  facebook: optionalString,
+  pinterest: optionalString,
+  telegram: optionalString,
+  discord: optionalString,
+  twitch: optionalString,
+  kwai: optionalString,
+  vsco: optionalString,
+  snapchat: optionalString,
+  onlyfans: optionalString,
 });
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: MOCK_USER_ID },
+      where: { id: userId },
       include: { socialLinks: true },
     });
 
@@ -46,41 +53,48 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
     const data = profileSchema.parse(body);
 
     const result = await prisma.$transaction(async (tx) => {
       const updatedUser = await tx.user.update({
-        where: { id: MOCK_USER_ID },
+        where: { id: userId },
         data: {
           name: data.name,
           bio: data.bio,
-          avatarUrl: data.avatarUrl,
+          avatarUrl: data.avatarUrl || null,
         },
       });
+
       const socialData = {
-        instagram: data.instagram, showInsta: !!data.instagram,
-        tiktok: data.tiktok, showTiktok: !!data.tiktok,
-        youtube: data.youtube, showYoutube: !!data.youtube,
-        twitter: data.twitter, showTwitter: !!data.twitter,
-        strava: data.strava, showStrava: !!data.strava,
-        linkedin: data.linkedin, showLinkedin: !!data.linkedin,
-        github: data.github, showGithub: !!data.github,
-        whatsapp: data.whatsapp, showWhatsapp: !!data.whatsapp,
-        facebook: data.facebook, showFacebook: !!data.facebook,
-        pinterest: data.pinterest, showPinterest: !!data.pinterest,
-        telegram: data.telegram, showTelegram: !!data.telegram,
-        discord: data.discord, showDiscord: !!data.discord,
-        twitch: data.twitch, showTwitch: !!data.twitch,
-        kwai: data.kwai, showKwai: !!data.kwai,
-        vsco: data.vsco, showVsco: !!data.vsco,
-        snapchat: data.snapchat, showSnapchat: !!data.snapchat,
-        onlyfans: data.onlyfans, showOnlyfans: !!data.onlyfans,
+        instagram: data.instagram || null, showInsta: !!data.instagram,
+        tiktok: data.tiktok || null, showTiktok: !!data.tiktok,
+        youtube: data.youtube || null, showYoutube: !!data.youtube,
+        twitter: data.twitter || null, showTwitter: !!data.twitter,
+        strava: data.strava || null, showStrava: !!data.strava,
+        linkedin: data.linkedin || null, showLinkedin: !!data.linkedin,
+        github: data.github || null, showGithub: !!data.github,
+        whatsapp: data.whatsapp || null, showWhatsapp: !!data.whatsapp,
+        facebook: data.facebook || null, showFacebook: !!data.facebook,
+        pinterest: data.pinterest || null, showPinterest: !!data.pinterest,
+        telegram: data.telegram || null, showTelegram: !!data.telegram,
+        discord: data.discord || null, showDiscord: !!data.discord,
+        twitch: data.twitch || null, showTwitch: !!data.twitch,
+        kwai: data.kwai || null, showKwai: !!data.kwai,
+        vsco: data.vsco || null, showVsco: !!data.vsco,
+        snapchat: data.snapchat || null, showSnapchat: !!data.snapchat,
+        onlyfans: data.onlyfans || null, showOnlyfans: !!data.onlyfans,
       };
 
       const updatedSocials = await tx.socialLinks.upsert({
-        where: { userId: MOCK_USER_ID },
-        create: { userId: MOCK_USER_ID, ...socialData },
+        where: { userId: userId },
+        create: { userId: userId, ...socialData },
         update: { ...socialData }
       });
 

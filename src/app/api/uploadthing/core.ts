@@ -1,16 +1,17 @@
 // src/app/api/uploadthing/core.ts
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { auth } from "@clerk/nextjs/server";
  
 const f = createUploadthing();
- 
-const auth = () => ({ id: "clerk_user_id_mock_1" }); 
  
 export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(async () => {
-      const user = auth(); 
-      if (!user) throw new Error("Unauthorized");
-      return { userId: user.id };
+      const { userId } = await auth();
+      
+      if (!userId) throw new Error("Unauthorized");
+      
+      return { userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload completo pelo usuário:", metadata.userId);

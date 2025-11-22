@@ -1,18 +1,17 @@
 // src/app/api/products/[id]/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 
 const updateProductSchema = z.object({
   title: z.string().min(3).optional(),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   affiliateUrl: z.string().url().optional(),
-  imageUrl: z.string().url().optional().or(z.literal("")),
-  price: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")).nullable(),
+  price: z.string().optional().nullable(),
   active: z.boolean().optional(),
 });
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 interface Context {
   params: {
@@ -22,10 +21,16 @@ interface Context {
 
 export async function DELETE(request: Request, context: Context) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { id } = context.params;
 
     const product = await prisma.product.findUnique({
-      where: { id, userId: MOCK_USER_ID },
+      where: { id, userId },
     });
 
     if (!product) {
@@ -51,6 +56,12 @@ export async function DELETE(request: Request, context: Context) {
 
 export async function PUT(request: Request, context: Context) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { id } = context.params;
     const body = await request.json();
 
@@ -64,7 +75,7 @@ export async function PUT(request: Request, context: Context) {
     }
 
     const existingProduct = await prisma.product.findUnique({
-      where: { id, userId: MOCK_USER_ID },
+      where: { id, userId },
     });
 
     if (!existingProduct) {

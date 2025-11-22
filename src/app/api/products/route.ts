@@ -1,9 +1,8 @@
 // src/app/api/products/route.ts
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import * as z from "zod";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 const productSchema = z.object({
   title: z.string().min(3, "O título é obrigatório."),
@@ -16,8 +15,14 @@ const productSchema = z.object({
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const products = await prisma.product.findMany({
-      where: { userId: MOCK_USER_ID },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -33,6 +38,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth(); // <--- ADICIONADO AWAIT
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
     
     const validation = productSchema.safeParse(body);
@@ -48,7 +59,7 @@ export async function POST(request: Request) {
 
     const newProduct = await prisma.product.create({
       data: {
-        userId: MOCK_USER_ID,
+        userId,
         title: data.title,
         description: data.description,
         affiliateUrl: data.affiliateUrl,

@@ -1,6 +1,7 @@
 // src/app/api/coupons/[id]/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 
 const updateCouponSchema = z.object({
@@ -11,8 +12,6 @@ const updateCouponSchema = z.object({
   active: z.boolean().optional(),
 });
 
-const MOCK_USER_ID = "clerk_user_id_mock_1";
-
 interface Context {
   params: {
     id: string;
@@ -21,10 +20,16 @@ interface Context {
 
 export async function DELETE(request: Request, context: Context) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { id } = context.params;
 
     const coupon = await prisma.coupon.findUnique({
-      where: { id, userId: MOCK_USER_ID },
+      where: { id, userId },
     });
 
     if (!coupon) {
@@ -50,6 +55,12 @@ export async function DELETE(request: Request, context: Context) {
 
 export async function PUT(request: Request, context: Context) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { id } = context.params;
     const body = await request.json();
 
@@ -63,7 +74,7 @@ export async function PUT(request: Request, context: Context) {
     }
 
     const existingCoupon = await prisma.coupon.findUnique({
-      where: { id, userId: MOCK_USER_ID },
+      where: { id, userId },
     });
 
     if (!existingCoupon) {

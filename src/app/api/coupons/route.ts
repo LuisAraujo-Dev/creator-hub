@@ -1,9 +1,8 @@
 // src/app/api/coupons/route.tsx
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import * as z from "zod";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
 
 const couponSchema = z.object({
   storeName: z.string().min(2, "Nome da loja é obrigatório."),
@@ -15,8 +14,14 @@ const couponSchema = z.object({
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const coupons = await prisma.coupon.findMany({
-      where: { userId: MOCK_USER_ID },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -32,6 +37,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
     
     const validation = couponSchema.safeParse(body);
@@ -47,7 +58,7 @@ export async function POST(request: Request) {
 
     const newCoupon = await prisma.coupon.create({
       data: {
-        userId: MOCK_USER_ID,
+        userId,
         storeName: data.storeName,
         code: data.code,
         discount: data.discount,
