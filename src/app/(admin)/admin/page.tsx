@@ -2,22 +2,28 @@
 import { CreditCard, DollarSign, MousePointer2, Package } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import prisma from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
+  const { userId } = await auth();
+  
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
   const [productsCount, couponsCount, user] = await Promise.all([
     prisma.product.count({
-      where: { userId: MOCK_USER_ID, active: true },
+      where: { userId, active: true },
     }),
     prisma.coupon.count({
-      where: { userId: MOCK_USER_ID, active: true },
+      where: { userId, active: true },
     }),
     prisma.user.findUnique({
-        where: { id: MOCK_USER_ID },
+        where: { id: userId },
         include: {
             products: { select: { clicks: true } },
             coupons: { select: { clicks: true } }

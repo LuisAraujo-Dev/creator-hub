@@ -2,12 +2,15 @@
 import prisma from "@/lib/prisma";
 import { columns } from "./columns";
 import DataTableClient from "./DataTableClient";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function PartnersPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
   const partners = await prisma.partner.findMany({
-    where: { userId: MOCK_USER_ID },
+    where: { userId: userId },
     orderBy: { createdAt: "desc" },
   });
 
@@ -16,4 +19,4 @@ export default async function PartnersPage() {
       <DataTableClient data={partners} columns={columns} />
     </div>
   );
-}   
+}

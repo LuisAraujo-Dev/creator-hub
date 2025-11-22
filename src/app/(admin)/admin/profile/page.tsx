@@ -1,15 +1,23 @@
 //src/app/(admin)/admin/profile/page.tsx
-import { Separator } from "@radix-ui/react-dropdown-menu";
-import { ProfileForm } from "./components/profile-form"; 
+import { Separator } from "@/components/ui/separator";
 import prisma from "@/lib/prisma";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { ProfileForm } from "./components/profile-form";
 
 export default async function ProfilePage() {
+    const { userId } = await auth();
+
+    if (!userId) redirect("/sign-in");
+
     const user = await prisma.user.findUnique({
-        where: { id: MOCK_USER_ID },
+        where: { id: userId },
         include: { socialLinks: true }
     });
+
+    if (!user) {
+        redirect("/onboarding");
+    }
 
     return (
         <div className="space-y-6 max-w-2xl mx-auto">

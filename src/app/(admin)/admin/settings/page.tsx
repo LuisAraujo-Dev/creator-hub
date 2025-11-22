@@ -1,17 +1,21 @@
 //src/app/(admin)/admin/settings/page.tsx
-import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { SettingsForm } from "./components/settings-form";
 import prisma from "@/lib/prisma";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function SettingsPage() {
+  const { userId } = await auth();
+
+  if (!userId) redirect("/sign-in");
+
   const user = await prisma.user.findUnique({
-    where: { id: MOCK_USER_ID },
+    where: { id: userId },
     select: { themeColor: true },
   });
 
-  if (!user) return null;
+  if (!user) redirect("/onboarding");
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">

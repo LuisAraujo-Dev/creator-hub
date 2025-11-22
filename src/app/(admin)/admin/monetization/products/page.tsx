@@ -1,13 +1,16 @@
 //src/app/(admin)/admin/monetization/products/page.tsx
 import prisma from "@/lib/prisma";
 import DataTableClient from "./DataTableClient";
-
-const MOCK_USER_ID = "clerk_user_id_mock_1";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function ProductsPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
   const products = await prisma.product.findMany({
     where: {
-      userId: MOCK_USER_ID,
+      userId: userId,
     },
     orderBy: {
       createdAt: 'desc',
