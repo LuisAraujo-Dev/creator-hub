@@ -3,23 +3,22 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "utfs.io",
+        protocol: 'https',
+        hostname: 'img.clerk.com',
       },
       {
-        protocol: "https",
-        hostname: "github.com", 
+        protocol: 'https',
+        hostname: 'utfs.io',
       },
       {
-        protocol: "https",
-        hostname: "images.unsplash.com", 
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'github.com',
       }
     ],
-  },
-  transpilePackages: ["@uploadthing/react", "uploadthing"],
-  
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 };
 
