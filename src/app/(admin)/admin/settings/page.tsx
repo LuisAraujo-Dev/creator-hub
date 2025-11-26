@@ -17,6 +17,19 @@ export default async function SettingsPage() {
 
   if (!user) redirect("/onboarding");
 
+  const userSubscription = await prisma.userSubscription.findUnique({
+    where: { userId },
+    select: {
+      stripeCurrentPeriodEnd: true,
+      stripeCustomerId: true,
+      stripePriceId: true,
+      stripeSubscriptionId: true,
+    },
+  });
+
+  const isPro = !!userSubscription?.stripePriceId && 
+                (userSubscription.stripeCurrentPeriodEnd?.getTime()! + 86_400_000 > Date.now());
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <header>
@@ -28,7 +41,7 @@ export default async function SettingsPage() {
 
       <Separator />
 
-      <SettingsForm initialData={user} />
+      <SettingsForm initialData={{ ...user, isPro }} />
     </div>
   );
 }
