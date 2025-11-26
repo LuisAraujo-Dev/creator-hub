@@ -25,10 +25,19 @@ export async function POST(req: Request) {
   if (event.type === "checkout.session.completed") {
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
-    ) as any; 
+    ) as any;
 
     if (!session?.metadata?.userId) {
       return new NextResponse("User ID is required", { status: 400 });
+    }
+
+    let periodEnd: Date;
+    if (subscription.current_period_end) {
+      periodEnd = new Date(subscription.current_period_end * 1000);
+    } else {
+      const today = new Date();
+      today.setDate(today.getDate() + 30);
+      periodEnd = today;
     }
 
     await prisma.userSubscription.create({
@@ -37,29 +46,38 @@ export async function POST(req: Request) {
         stripeSubscriptionId: subscription.id,
         stripeCustomerId: subscription.customer as string,
         stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000
-        ),
+        stripeCurrentPeriodEnd: periodEnd,
       },
     });
   }
-
+  
   if (event.type === "invoice.payment_succeeded") {
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
     ) as any;
 
-    await prisma.userSubscription.update({
-      where: {
-        stripeSubscriptionId: subscription.id,
-      },
-      data: {
-        stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(
-          subscription.current_period_end * 1000
-        ),
-      },
+    let periodEnd: Date;
+    if (subscription.current_period_end) {
+      periodEnd = new Date(subscription.current_period_end * 1000);
+    } else {
+      const today = new Date();
+      today.setDate(today.getDate() + 30);
+      periodEnd = today;
+    }
+
+    const existingSub = await prisma.userSubscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id }
     });
+
+    if (existingSub) {
+      await prisma.userSubscription.update({
+        where: { stripeSubscriptionId: subscription.id },
+        data: {
+          stripePriceId: subscription.items.data[0].price.id,
+          stripeCurrentPeriodEnd: periodEnd,
+        },
+      });
+    }
   }
 
   return new NextResponse(null, { status: 200 });
