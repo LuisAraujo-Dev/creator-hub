@@ -77,7 +77,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={openEdit}
         onClose={(didSave) => {
             setOpenEdit(false);
-            if (didSave) router.refresh();
+            router.refresh(); 
         }}
         initialData={data}
       />

@@ -60,7 +60,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
       <PartnerForm 
         isOpen={openEdit}
-        onClose={() => { setOpenEdit(false); router.refresh(); }}
+        onClose={() => { 
+            setOpenEdit(false); 
+            router.refresh();
+        }}
         initialData={data}
       />
 

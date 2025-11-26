@@ -171,12 +171,14 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
             </div>
 
             <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50/50">
-                <Label htmlFor="active" className="text-sm font-medium cursor-pointer flex flex-col">
-                    <span>Ativo</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">Visível publicamente</span>
-                </Label>
+                <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-slate-900">Visibilidade</span>
+                    <span className="text-[10px] text-muted-foreground">
+                        Define se o produto aparece na página pública.
+                    </span>
+                </div>
+                
                 <Switch
-                    id="active"
                     checked={form.watch('active')}
                     onCheckedChange={(val) => form.setValue('active', val, { shouldValidate: true })}
                 />
