@@ -10,9 +10,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "../../../../../components/ui/input";
-import { Label } from "../../../../../components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../../components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SubscriptionButton } from "@/components/subscription-button"; 
 
 const settingsSchema = z.object({
   themeColor: z.string().min(4).regex(new RegExp("^#"), "Deve começar com #"),
@@ -23,6 +24,7 @@ type SettingsFormValues = z.infer<typeof settingsSchema>;
 interface SettingsFormProps {
   initialData: {
     themeColor: string;
+    isPro?: boolean; 
   };
 }
 
@@ -53,6 +55,7 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+      
       <Card>
         <CardHeader>
           <CardTitle>Aparência</CardTitle>
@@ -98,6 +101,24 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
                 Essa cor será usada na barra lateral dos cartões da sua página pública.
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* CARD DE ASSINATURA (NOVO) */}
+      <Card className="border-blue-100 bg-blue-50/50 dark:bg-slate-900/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+             Plano Atual
+             <span className={`text-xs font-normal px-2 py-1 rounded-full ${initialData.isPro ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
+                {initialData.isPro ? "Pro" : "Grátis"}
+             </span>
+          </CardTitle>
+          <CardDescription>
+            Gerencie sua assinatura para desbloquear recursos ilimitados.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+           <SubscriptionButton isPro={!!initialData.isPro} />
         </CardContent>
       </Card>
 
