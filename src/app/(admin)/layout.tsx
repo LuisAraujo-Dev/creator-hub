@@ -1,4 +1,3 @@
-//src/app/(admin)/layout.tsx
 "use client";
 
 import Link from "next/link";
@@ -14,6 +13,7 @@ import {
   Handshake
 } from "lucide-react";
 import { toast } from "sonner";
+import { useClerk } from "@clerk/nextjs";
 import { cn } from "../../../lib/utils";
 
 export default function AdminLayout({
@@ -23,6 +23,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { signOut } = useClerk();
 
   const isActiveLink = (path: string) => {
     if (path === "/admin") {
@@ -41,9 +42,10 @@ export default function AdminLayout({
     );
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     toast.success("Você saiu do sistema.");
-    router.push("/");
+    router.push("/sign-in");
   };
 
   return (
@@ -69,7 +71,6 @@ export default function AdminLayout({
                 <ShoppingBag size={18} />
                 <span className="hidden md:inline">Produtos</span>
               </Link>
-              {/* CORREÇÃO AQUI: De 'cupons' para 'coupons' */}
               <Link href="/admin/monetization/coupons" className={getLinkClass("/admin/monetization/coupons")} title="Cupons">
                 <Tag size={18} />
                 <span className="hidden md:inline">Cupons</span>
@@ -82,7 +83,7 @@ export default function AdminLayout({
 
             <div className="flex items-center gap-1 shrink-0">
                <Link 
-                  href="/luisrun" 
+                  href="/" 
                   target="_blank" 
                   className="hidden sm:flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-full mr-2 border border-blue-100"
                >
