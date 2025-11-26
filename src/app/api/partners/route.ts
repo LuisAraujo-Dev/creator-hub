@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import * as z from "zod";
+import { checkSubscription } from "@/lib/subscription";
 
 const partnerSchema = z.object({
   name: z.string().min(2, "Nome do parceiro é obrigatório"),
@@ -14,10 +15,7 @@ const partnerSchema = z.object({
 export async function GET() {
   try {
     const { userId } = await auth();
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const partners = await prisma.partner.findMany({
       where: { userId },
@@ -27,20 +25,14 @@ export async function GET() {
     return NextResponse.json(partners);
   } catch (error) {
     console.error("[PARTNERS_GET]", error);
-    return NextResponse.json(
-      { error: "Erro ao buscar parceiros" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao buscar parceiros" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const { userId } = await auth();
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const body = await request.json();
     const validation = partnerSchema.safeParse(body);
@@ -50,6 +42,21 @@ export async function POST(request: Request) {
         { error: "Dados inválidos", details: validation.error.flatten().fieldErrors },
         { status: 400 }
       );
+    }
+
+    const isPro = await checkSubscription();
+
+    if (!isPro) {
+      const count = await prisma.partner.count({
+        where: { userId },
+      });
+
+      if (count >= 1) {
+        return NextResponse.json(
+          { error: "Plano Grátis permite apenas 1 parceiro. Assine o Pro para ilimitados." },
+          { status: 403 }
+        );
+      }
     }
 
     const data = validation.data;
@@ -67,9 +74,6 @@ export async function POST(request: Request) {
     return NextResponse.json(newPartner, { status: 201 });
   } catch (error) {
     console.error("[PARTNERS_POST]", error);
-    return NextResponse.json(
-      { error: "Erro ao criar parceiro" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao criar parceiro" }, { status: 500 });
   }
 }
