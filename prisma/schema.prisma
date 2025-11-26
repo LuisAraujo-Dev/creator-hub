@@ -18,7 +18,8 @@ model User {
   bio           String?   // A frase de efeito
   
   // Cores personalizadas (pode ser expandido depois)
-  themeColor    String    @default("#000000")
+  themeColor    String   @default("#000000")
+  theme         String   @default("light")
   
   // Relacionamentos
   socialLinks   SocialLinks?
