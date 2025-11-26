@@ -7,33 +7,64 @@ import prisma from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Overview } from "@/components/overview"; 
 
 export default async function DashboardPage() {
   const { userId } = await auth();
   
-  if (!userId) {
-    redirect("/sign-in");
-  }
+  if (!userId) redirect("/sign-in");
 
   const [productsCount, couponsCount, user] = await Promise.all([
-    prisma.product.count({
-      where: { userId, active: true },
-    }),
-    prisma.coupon.count({
-      where: { userId, active: true },
-    }),
+    prisma.product.count({ where: { userId, active: true } }),
+    prisma.coupon.count({ where: { userId, active: true } }),
     prisma.user.findUnique({
         where: { id: userId },
         include: {
             products: { select: { clicks: true } },
-            coupons: { select: { clicks: true } }
+            coupons: { select: { clicks: true } },
+            partners: { select: { clicks: true } }
         }
     })
   ]);
 
   const totalProductClicks = user?.products.reduce((acc, curr) => acc + curr.clicks, 0) || 0;
   const totalCouponClicks = user?.coupons.reduce((acc, curr) => acc + curr.clicks, 0) || 0;
-  const totalClicks = totalProductClicks + totalCouponClicks;
+  const totalPartnerClicks = user?.partners.reduce((acc, curr) => acc + curr.clicks, 0) || 0;
+  const totalClicks = totalProductClicks + totalCouponClicks + totalPartnerClicks;
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const logs = await prisma.analyticsLog.findMany({
+    where: {
+        userId: userId,
+        createdAt: {
+            gte: sevenDaysAgo
+        }
+    },
+    orderBy: { createdAt: 'asc' }
+  });
+
+  const chartDataMap: Record<string, number> = {};
+  
+  for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      chartDataMap[key] = 0;
+  }
+
+  logs.forEach(log => {
+      const key = log.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      if (chartDataMap[key] !== undefined) {
+          chartDataMap[key]++;
+      }
+  });
+
+  const graphData = Object.keys(chartDataMap).map(key => ({
+      name: key,
+      total: chartDataMap[key]
+  }));
 
   return (
     <div className="space-y-6">
@@ -54,79 +85,60 @@ export default async function DashboardPage() {
       <Separator />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        
+        {/* CARDS DE MÉTRICAS (Mantenha igual) */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Cliques
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total de Cliques</CardTitle>
             <MousePointer2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalClicks}</div>
-            <p className="text-xs text-muted-foreground">
-              Em todos os links ativos
-            </p>
+            <p className="text-xs text-muted-foreground">Em todos os links ativos</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Produtos Ativos
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Produtos Ativos</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{productsCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Recomendações publicadas
-            </p>
+            <p className="text-xs text-muted-foreground">Recomendações publicadas</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Cupons Ativos
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Cupons Ativos</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{couponsCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Parcerias ativas
-            </p>
+            <p className="text-xs text-muted-foreground">Parcerias ativas</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Conversão Estimada
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Faturamento</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">--%</div>
-            <p className="text-xs text-muted-foreground">
-              Disponível na versão Pro
-            </p>
+            <div className="text-2xl font-bold">R$ 0,00</div>
+            <p className="text-xs text-muted-foreground">Estimativa de comissão</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+        {/* GRÁFICO */}
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Visão Geral</CardTitle>
+            <CardTitle>Performance (Últimos 7 dias)</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground bg-slate-100 rounded-md dark:bg-slate-800">
-                Gráfico de Cliques (Em breve)
-            </div>
+            <Overview data={graphData} />
           </CardContent>
         </Card>
+
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Acesso Rápido</CardTitle>
