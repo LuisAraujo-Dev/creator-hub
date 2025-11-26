@@ -141,3 +141,13 @@ model UserSubscription {
   stripePriceId          String?  @map(name: "stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
 }
+
+model AnalyticsLog {
+  id        String   @id @default(cuid())
+  userId    String   // O dono do perfil (para agruparmos no dashboard dele)
+  type      String   // "product", "coupon", "partner"
+  itemId    String   // O ID do item clicado
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt]) // Índice para deixar o gráfico rápido
+}
