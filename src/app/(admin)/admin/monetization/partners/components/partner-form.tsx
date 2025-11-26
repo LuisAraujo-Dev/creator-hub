@@ -145,12 +145,14 @@ export function PartnerForm({ isOpen, onClose, initialData }: PartnerFormProps) 
             </div>
 
             <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50/50">
-                <Label htmlFor="active" className="text-sm font-medium cursor-pointer flex flex-col">
-                    <span>Parceria Ativa</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">Visível publicamente</span>
-                </Label>
+                <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-slate-900">Exibição</span>
+                    <span className="text-[10px] text-muted-foreground">
+                        Controla a visibilidade da parceria.
+                    </span>
+                </div>
+                
                 <Switch
-                    id="active"
                     checked={form.watch("active")}
                     onCheckedChange={(val) => form.setValue("active", val)}
                 />
