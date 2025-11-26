@@ -15,7 +15,6 @@ interface PageProps {
   params: { username: string };
 }
 
-// Função para buscar dados (Cacheada automaticamente pelo Next.js)
 async function getUser(username: string) {
   return await prisma.user.findUnique({
     where: { username: username },
@@ -28,7 +27,6 @@ async function getUser(username: string) {
   });
 }
 
-// --- SEO DINÂMICO (Metatags) ---
 export async function generateMetadata(
   { params }: PageProps,
   parent: ResolvingMetadata
@@ -60,7 +58,6 @@ export async function generateMetadata(
   };
 }
 
-// --- PÁGINA PRINCIPAL ---
 export default async function UserProfile({ params }: PageProps) {
   const { username } = params; 
   
@@ -69,13 +66,11 @@ export default async function UserProfile({ params }: PageProps) {
 
   const themeColor = data.themeColor || "#000000";
   
-  // Configuração do Tema
   const themeKey = (data.theme as ThemeKey) || "light";
   const theme = THEMES[themeKey] || THEMES.light;
 
   const s = data.socialLinks; 
 
-  // Componente de Ícone Social Adaptável ao Tema
   const SocialIcon = ({ show, link, icon: Icon, color }: any) => {
     if (!show || !link) return null;
     return (
@@ -86,7 +81,6 @@ export default async function UserProfile({ params }: PageProps) {
         className={`hover:scale-110 transition-transform duration-200 p-3 rounded-full flex items-center justify-center ${themeKey === 'light' ? 'bg-transparent hover:bg-gray-100' : 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'}`}
         title={link}
       >
-         {/* Se for tema diferente de Light, força ícone branco para contraste. Se for Light, usa a cor da marca. */}
          <Icon size={24} style={{ color: themeKey !== 'light' ? 'white' : color }} />
       </a>
     );
@@ -95,13 +89,18 @@ export default async function UserProfile({ params }: PageProps) {
   return (
     <div className={`min-h-screen flex justify-center font-sans transition-colors duration-500 ${theme.bgClass} ${theme.textClass}`}>
       
-      {/* CONTAINER CENTRAL (CELULAR) */}
       <div className={`w-full max-w-[480px] min-h-screen flex flex-col pb-12 shadow-xl transition-all duration-500 ${themeKey === 'light' ? 'bg-white' : 'bg-transparent'}`}>
        
         {/* --- CABEÇALHO --- */}
         <header className="flex flex-col items-center pt-12 px-6 text-center">
-            <div className="relative w-28 h-28 rounded-full p-1 mb-4">
-                <div className={`relative w-full h-full rounded-full overflow-hidden border-4 shadow-lg ${themeKey === 'light' ? 'border-white shadow-gray-200' : 'border-white/20'}`}>
+            {/* ADICIONADO: boxShadow dinâmico com a cor do tema */}
+            <div 
+                className="relative w-28 h-28 rounded-full p-1 mb-4 transition-shadow duration-300"
+                // Adiciona um "glow" colorido e translúcido ao redor da foto
+                style={{ boxShadow: `0 0 30px 5px ${themeColor}60` }}
+            >
+                {/* Removi sombras genéricas internas para dar destaque ao glow colorido */}
+                <div className={`relative w-full h-full rounded-full overflow-hidden border-4 ${themeKey === 'light' ? 'border-white' : 'border-white/20'}`}>
                   {data.avatarUrl ? (
                     <Image
                       src={data.avatarUrl}
