@@ -86,8 +86,13 @@ export function PartnerForm({ isOpen, onClose, initialData }: PartnerFormProps) 
         form.reset();
         onClose();
       } else {
-        console.error("Erro ao salvar parceiro");
-        toast.error("Erro ao salvar parceiro.");
+        const responseData = await response.json(); 
+      
+      if (responseData.error) {
+          toast.error(responseData.error); 
+      } else {
+          toast.error("Erro ao salvar.");
+      }
       }
     } catch (error) {
       console.error(error);

@@ -2,8 +2,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
-
 import { Coupon } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,8 +10,8 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Label } from "../../../../../../components/ui/label";
-import { Input } from "../../../../../../components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
 const couponSchema = z.object({
@@ -38,21 +36,13 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
 
   const form = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema),
-    defaultValues: initialData
-      ? {
-          storeName: initialData.storeName,
-          code: initialData.code,
-          discount: initialData.discount,
-          link: initialData.link || "",
-          active: initialData.active,
-        }
-      : {
-          storeName: "",
-          code: "",
-          discount: "",
-          link: "",
-          active: true,
-        },
+    defaultValues: {
+      storeName: "",
+      code: "",
+      discount: "",
+      link: "",
+      active: true,
+    },
   });
 
   useEffect(() => {
@@ -91,14 +81,19 @@ export function CouponForm({ isOpen, onClose, initialData }: CouponFormProps) {
         }),
       });
 
+      const responseData = await response.json();
+
       if (response.ok) {
         toast.success(isEditMode ? "Cupom atualizado!" : "Cupom criado!");
         form.reset();
-        onClose(true); // Passa true para indicar que salvou
+        onClose(true);
       } else {
-        const error = await response.json();
-        console.error(error);
-        toast.error("Erro ao salvar cupom.");
+        if (responseData.error) {
+            toast.error(responseData.error);
+        } else {
+            toast.error("Erro desconhecido ao salvar.");
+        }
+        console.error(responseData);
       }
     } catch (error) {
       console.error("Erro de rede:", error);
