@@ -104,9 +104,13 @@ export function ProductForm({ isOpen, onClose, initialData }: ProductFormProps) 
         form.reset(); 
         onClose(); 
       } else {
-        const error = await response.json();
-        console.error(error);
-        toast.error("Erro ao salvar. Verifique os dados.");
+      const responseData = await response.json();
+      
+      if (responseData.error) {
+          toast.error(responseData.error); 
+      } else {
+          toast.error("Erro ao salvar.");
+      }
       }
     } catch (error) {
       console.error("Erro de rede:", error);
