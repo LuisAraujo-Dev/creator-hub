@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
+import { checkSubscription } from "@/lib/subscription";
 
 const optionalString = z.string().optional().or(z.literal('')).nullable();
 
@@ -30,13 +31,16 @@ const profileSchema = z.object({
   onlyfans: optionalString,
 });
 
+const SOCIAL_KEYS = [
+  "instagram", "tiktok", "youtube", "twitter", "strava", "linkedin", 
+  "github", "whatsapp", "facebook", "pinterest", "telegram", 
+  "discord", "twitch", "kwai", "vsco", "snapchat", "onlyfans"
+];
+
 export async function GET() {
   try {
     const { userId } = await auth();
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -54,13 +58,30 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const { userId } = await auth();
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
     const body = await request.json();
     const data = profileSchema.parse(body);
+
+    const isPro = await checkSubscription();
+
+    if (!isPro) {
+      let activeSocialsCount = 0;
+      
+      for (const key of SOCIAL_KEYS) {
+        // @ts-ignore
+        if (data[key] && data[key].trim().length > 0) {
+          activeSocialsCount++;
+        }
+      }
+
+      if (activeSocialsCount > 2) {
+        return NextResponse.json(
+          { error: "Plano Grátis permite apenas 2 redes sociais ativas. Assine o Pro para liberar todas." },
+          { status: 403 }
+        );
+      }
+    }
 
     const result = await prisma.$transaction(async (tx) => {
       const updatedUser = await tx.user.update({
