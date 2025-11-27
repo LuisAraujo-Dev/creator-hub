@@ -11,12 +11,12 @@ export default async function PartnersPage() {
 
   const partners = await prisma.partner.findMany({
     where: { userId: userId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
-      <DataTableClient data={partners} columns={columns} />
+      <DataTableClient data={partners} columns={columns} apiEndpoint="partner"/>
     </div>
   );
 }

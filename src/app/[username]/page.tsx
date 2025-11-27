@@ -16,20 +16,18 @@ interface PageProps {
   params: { username: string };
 }
 
-// Função para buscar dados (Cacheada automaticamente pelo Next.js na mesma requisição)
 async function getUser(username: string) {
   return await prisma.user.findUnique({
     where: { username: username },
     include: {
       socialLinks: true,
-      products: { where: { active: true }, orderBy: { createdAt: 'desc' } },
-      coupons: { where: { active: true }, orderBy: { createdAt: 'desc' } },
-      partners: { where: { active: true }, orderBy: { createdAt: 'desc' } },
+      products: { where: { active: true }, orderBy: { order: 'asc' } }, 
+      coupons: { where: { active: true }, orderBy: { order: 'asc' } }, 
+      partners: { where: { active: true }, orderBy: { order: 'asc' } }, 
     },
   });
 }
 
-// --- SEO DINÂMICO (Metatags para Google/WhatsApp) ---
 export async function generateMetadata(
   { params }: PageProps,
   parent: ResolvingMetadata
@@ -61,7 +59,6 @@ export async function generateMetadata(
   };
 }
 
-// --- PÁGINA PRINCIPAL ---
 export default async function UserProfile({ params }: PageProps) {
   const { username } = params; 
   
@@ -70,13 +67,11 @@ export default async function UserProfile({ params }: PageProps) {
 
   const themeColor = data.themeColor || "#000000";
   
-  // Configuração do Tema (Light, Dark, Sunset, etc)
   const themeKey = (data.theme as ThemeKey) || "light";
   const theme = THEMES[themeKey] || THEMES.light;
 
   const s = data.socialLinks; 
 
-  // Componente de Ícone Social Adaptável ao Tema
   const SocialIcon = ({ show, link, icon: Icon, color }: any) => {
     if (!show || !link) return null;
     return (
@@ -84,31 +79,26 @@ export default async function UserProfile({ params }: PageProps) {
         href={link} 
         target="_blank" 
         rel="noopener noreferrer"
-        // Se for tema Light, usa fundo transparente. Se for Dark/Pro, usa fundo translúcido.
         className={`hover:scale-110 transition-transform duration-200 p-3 rounded-full flex items-center justify-center ${themeKey === 'light' ? 'bg-transparent hover:bg-gray-100' : 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'}`}
         title={link}
       >
-         {/* Se for tema diferente de Light, força ícone branco para contraste. Se for Light, usa a cor da marca. */}
          <Icon size={24} style={{ color: themeKey !== 'light' ? 'white' : color }} />
       </a>
     );
   };
 
   return (
-    // APLICA O BACKGROUND DO TEMA NO CONTAINER GERAL
     <div className={`min-h-screen flex justify-center font-sans transition-colors duration-500 ${theme.bgClass} ${theme.textClass}`}>
       
-      {/* CONTAINER CENTRAL (CELULAR) */}
       <div className={`w-full max-w-[480px] min-h-screen flex flex-col pb-12 shadow-xl transition-all duration-500 ${themeKey === 'light' ? 'bg-white' : 'bg-transparent'}`}>
        
         {/* --- CABEÇALHO --- */}
         <header className="flex flex-col items-center pt-12 px-6 text-center">
             <div 
                 className="relative w-28 h-28 rounded-full p-1 mb-4 transition-shadow duration-300"
-                // Glow colorido ao redor da foto
                 style={{ boxShadow: `0 0 30px 5px ${themeColor}60` }}
             >
-                <div className={`relative w-full h-full rounded-full overflow-hidden border-4 shadow-lg ${themeKey === 'light' ? 'border-white shadow-gray-200' : 'border-white/20'}`}>
+                <div className={`relative w-full h-full rounded-full overflow-hidden border-0.1px shadow-lg ${themeKey === 'light' ? 'border-white shadow-gray-200' : 'border-white/20'}`}>
                   {data.avatarUrl ? (
                     <Image
                       src={data.avatarUrl}
@@ -159,7 +149,7 @@ export default async function UserProfile({ params }: PageProps) {
           <div className={`h-px w-full ${themeKey === 'light' ? 'bg-gray-100' : 'bg-white/20'}`}></div>
         </div>
 
-        {/* --- CUPONS (Novo Componente) --- */}
+        {/* --- CUPONS --- */}
         {data.coupons.length > 0 && (
           <div className="px-4 mb-8">
               <h2 className={`text-xs font-bold uppercase tracking-widest mb-3 ml-1 ${themeKey === 'light' ? 'text-gray-400' : 'text-white/60'}`}>
