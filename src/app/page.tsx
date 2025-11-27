@@ -1,29 +1,50 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, Zap, Star, Shield, LayoutTemplate, Palette } from "lucide-react";
+// NOVOS IMPORTS DO CLERK
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
       
-      {/* --- HEADER --- */}
+      {/* --- HEADER INTELIGENTE --- */}
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          
           <div className="flex items-center gap-2 font-bold text-xl text-blue-600">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">C</div>
             CreatorHub
           </div>
+
           <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
             <Link href="#features" className="hover:text-blue-600 transition">Recursos</Link>
             <Link href="#pricing" className="hover:text-blue-600 transition">Preços</Link>
           </nav>
+
           <div className="flex items-center gap-4">
-            <Link href="/sign-in" className="text-sm font-medium hover:underline hidden sm:block">
-              Entrar
-            </Link>
-            <Link href="/sign-up">
-              <Button>Começar Grátis</Button>
-            </Link>
+            
+            {/* MOSTRA SÓ SE ESTIVER DESLOGADO */}
+            <SignedOut>
+              <Link href="/sign-in" className="text-sm font-medium hover:underline hidden sm:block">
+                Entrar
+              </Link>
+              <Link href="/sign-up">
+                <Button>Começar Grátis</Button>
+              </Link>
+            </SignedOut>
+
+            {/* MOSTRA SÓ SE ESTIVER LOGADO */}
+            <SignedIn>
+              <Link href="/admin">
+                <Button variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                  Meu Painel
+                </Button>
+              </Link>
+              {/* Botão de perfil do Clerk (Sair, Conta, etc) */}
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+
           </div>
         </div>
       </header>
@@ -44,19 +65,32 @@ export default function LandingPage() {
               Centralize suas redes sociais, recomende produtos e compartilhe cupons de desconto. 
               Transforme seguidores em clientes em segundos.
             </p>
+            
+            {/* BOTÕES DO HERO TAMBÉM PODEM SER INTELIGENTES */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/sign-up">
-                <Button size="lg" className="h-12 px-8 text-base w-full sm:w-auto">
-                  Criar minha página <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              {/* Ajuste o user abaixo para o seu user oficial se quiser */}
+              <SignedOut>
+                <Link href="/sign-up">
+                  <Button size="lg" className="h-12 px-8 text-base w-full sm:w-auto">
+                    Criar minha página <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </SignedOut>
+
+              <SignedIn>
+                <Link href="/admin">
+                  <Button size="lg" className="h-12 px-8 text-base w-full sm:w-auto">
+                    Ir para Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </SignedIn>
+
               <Link href="/luisrun"> 
                 <Button variant="outline" size="lg" className="h-12 px-8 text-base w-full sm:w-auto">
                   Ver exemplo ao vivo
                 </Button>
               </Link>
             </div>
+            
             <p className="mt-4 text-xs text-slate-500">Não requer cartão de crédito • Plano grátis para sempre</p>
           </div>
         </section>
