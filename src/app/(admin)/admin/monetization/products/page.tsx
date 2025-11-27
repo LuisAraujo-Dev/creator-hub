@@ -13,13 +13,13 @@ export default async function ProductsPage() {
       userId: userId,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: 'asc',
     },
   });
 
   return (
     <div className="flex-1 space-y-4 pt-6">
-      <DataTableClient data={products} />
+      <DataTableClient data={products} apiEndpoint="product"/>
     </div>
   );
 }

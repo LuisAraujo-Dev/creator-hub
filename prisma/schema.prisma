@@ -12,16 +12,14 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  username      String    @unique // O slug da URL (ex: meudominio.com/joao)
+  username      String    @unique 
   name          String
   avatarUrl     String?
-  bio           String?   // A frase de efeito
+  bio           String?   
   
-  // Cores personalizadas (pode ser expandido depois)
   themeColor    String   @default("#000000")
   theme         String   @default("light")
   
-  // Relacionamentos
   socialLinks   SocialLinks?
   products      Product[]
   coupons       Coupon[]
@@ -89,14 +87,15 @@ model Product {
   title        String
   description  String?
   imageUrl     String?
-  affiliateUrl String   // O link de afiliado
+  affiliateUrl String   
   price        String?  
   
-  clicks       Int      @default(0) // Métrica simples
+  clicks       Int      @default(0) 
   active       Boolean  @default(true)
   
+  order        Int      @default(0) 
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt // Adicionado para controle
+  updatedAt    DateTime @updatedAt
 }
 
 model Coupon {
@@ -104,17 +103,17 @@ model Coupon {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  storeName   String   // Ex: "Centauro"
-  code        String   // Ex: "LUIS10"
-  discount    String   // Ex: "10% OFF"
-  link        String?  // Link opcional para a loja
+  storeName   String   
+  code        String   
+  discount    String   
+  link        String?  
   
   clicks      Int      @default(0)
   active      Boolean  @default(true)
 
-  // --- CAMPOS ADICIONADOS PARA CORRIGIR O ERRO ---
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order        Int      @default(0) 
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Partner {
@@ -129,9 +128,9 @@ model Partner {
   clicks      Int      @default(0)
   active      Boolean  @default(true)
 
-  // --- CAMPOS ADICIONADOS PARA PADRONIZAÇÃO ---
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model UserSubscription {
@@ -145,10 +144,10 @@ model UserSubscription {
 
 model AnalyticsLog {
   id        String   @id @default(cuid())
-  userId    String   // O dono do perfil (para agruparmos no dashboard dele)
-  type      String   // "product", "coupon", "partner"
-  itemId    String   // O ID do item clicado
+  userId    String   
+  type      String   
+  itemId    String   
   createdAt DateTime @default(now())
 
-  @@index([userId, createdAt]) // Índice para deixar o gráfico rápido
+  @@index([userId, createdAt]) 
 }
