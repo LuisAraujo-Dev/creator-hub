@@ -14,7 +14,6 @@ import { DataTable } from "@/components/data-table";
 
 interface Props {
   data: Coupon[];
-  apiEndpoint?: string,
 }
 
 export default function DataTableClient({ data }: Props) {

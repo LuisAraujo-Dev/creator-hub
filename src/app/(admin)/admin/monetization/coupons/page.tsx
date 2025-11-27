@@ -13,13 +13,13 @@ export default async function CouponsPage() {
       userId: userId,
     },
     orderBy: {
-      createdAt: 'asc',
+      createdAt: 'desc',
     }
   });
 
   return (
     <div className="flex-1 space-y-4 pt-6">
-      <DataTableClient data={coupons} apiEndpoint="coupon"/>
+      <DataTableClient data={coupons} />
     </div>
   );
 }

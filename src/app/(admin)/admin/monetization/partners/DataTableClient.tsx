@@ -16,7 +16,6 @@ import { DataTable } from "@/components/data-table";
 interface Props {
   data: Partner[];
   columns: ColumnDef<Partner>[];
-  apiEndpoint: string,
 }
 
 export default function DataTableClient({ data, columns }: Props) {
