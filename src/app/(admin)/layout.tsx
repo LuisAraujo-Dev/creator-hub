@@ -11,11 +11,15 @@ import {
   ShoppingBag, 
   Tag, 
   Handshake,
-  LifeBuoy
+  LifeBuoy,
+  ShieldAlert // Ícone para o Super Admin
 } from "lucide-react";
 import { toast } from "sonner";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { cn } from "../../../lib/utils";
+
+// Defina aqui os emails que podem ver o botão de Admin
+const ADMIN_EMAILS = ["correluisaraujo@gmail.com"];
 
 export default function AdminLayout({
   children,
@@ -25,6 +29,12 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useClerk();
+  const { user } = useUser();
+
+  // Verifica se o usuário logado é um admin
+  const isSuperAdmin = user?.emailAddresses.some(email => 
+    ADMIN_EMAILS.includes(email.emailAddress)
+  );
 
   const isActiveLink = (path: string) => {
     if (path === "/admin") {
@@ -56,7 +66,7 @@ export default function AdminLayout({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
             
-            {/* LOGO */}
+            {/* LOGO (Clicável para Dashboard) */}
             <Link 
               href="/admin" 
               className="flex items-center gap-2 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
@@ -91,8 +101,17 @@ export default function AdminLayout({
                 <LifeBuoy size={18} />
                 <span className="hidden md:inline">Ajuda</span>
               </Link>
+
+              {/* LINK SUPER ADMIN (Só aparece para você) */}
+              {isSuperAdmin && (
+                <Link href="/admin/system/users" className={cn(getLinkClass("/admin/system/users"), "text-red-600 hover:text-red-700 hover:bg-red-50")} title="Super Admin">
+                    <ShieldAlert size={18} />
+                    <span className="hidden md:inline">Admin</span>
+                </Link>
+              )}
             </nav>
 
+            {/* AÇÕES DO USUÁRIO */}
             <div className="flex items-center gap-1 shrink-0">
                <Link 
                   href="/" 
