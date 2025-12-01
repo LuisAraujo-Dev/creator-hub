@@ -10,7 +10,8 @@ import {
   ExternalLink, 
   ShoppingBag, 
   Tag, 
-  Handshake
+  Handshake,
+  LifeBuoy
 } from "lucide-react";
 import { toast } from "sonner";
 import { useClerk } from "@clerk/nextjs";
@@ -55,13 +56,19 @@ export default function AdminLayout({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
             
-            <div className="flex items-center gap-2 shrink-0 cursor-default">
+            {/* LOGO */}
+            <Link 
+              href="/admin" 
+              className="flex items-center gap-2 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+              title="Voltar ao Dashboard"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">
                 C
               </div>
               <span className="text-lg font-bold tracking-tight hidden md:block">CreatorHub</span>
-            </div>
+            </Link>
 
+            {/* NAVEGAÇÃO PRINCIPAL */}
             <nav className="flex items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar py-1 px-2 max-w-full">
               <Link href="/admin" className={getLinkClass("/admin")} title="Dashboard">
                 <LayoutDashboard size={18} />
@@ -78,6 +85,11 @@ export default function AdminLayout({
               <Link href="/admin/monetization/partners" className={getLinkClass("/admin/monetization/partners")} title="Parceiros">
                 <Handshake size={18} />
                 <span className="hidden md:inline">Parceiros</span>
+              </Link>
+              
+              <Link href="/admin/support" className={getLinkClass("/admin/support")} title="Suporte">
+                <LifeBuoy size={18} />
+                <span className="hidden md:inline">Ajuda</span>
               </Link>
             </nav>
 
