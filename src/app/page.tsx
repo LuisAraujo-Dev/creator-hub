@@ -12,10 +12,13 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           
-          <div className="flex items-center gap-2 font-bold text-xl text-blue-600">
+          <Link 
+            href="/" 
+            className="flex items-center gap-2 font-bold text-xl text-blue-600 hover:opacity-80 transition-opacity"
+          >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">C</div>
             CreatorHub
-          </div>
+          </Link>
 
           <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
             <Link href="#features" className="hover:text-blue-600 transition">Recursos</Link>
