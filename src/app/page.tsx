@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Zap, Star, Shield, LayoutTemplate, Palette } from "lucide-react";
-// NOVOS IMPORTS DO CLERK
+import { ArrowRight, Check, Zap, Star, Shield, LayoutTemplate } from "lucide-react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
       
-      {/* --- HEADER INTELIGENTE --- */}
+      {/* --- HEADER --- */}
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           
@@ -27,24 +26,21 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-4">
             
-            {/* MOSTRA SÓ SE ESTIVER DESLOGADO */}
             <SignedOut>
-              <Link href="/sign-in" className="text-sm font-medium hover:underline hidden sm:block">
+              <Link href="/sign-in" className="text-sm font-medium hover:text-blue-600 transition-colors">
                 Entrar
               </Link>
               <Link href="/sign-up">
-                <Button>Começar Grátis</Button>
+                <Button size="sm">Criar Conta</Button>
               </Link>
             </SignedOut>
 
-            {/* MOSTRA SÓ SE ESTIVER LOGADO */}
             <SignedIn>
               <Link href="/admin">
                 <Button variant="outline" className="border-blue-200 hover:bg-blue-50 text-blue-700">
-                  Meu Painel
+                  Painel
                 </Button>
               </Link>
-              {/* Botão de perfil do Clerk (Sair, Conta, etc) */}
               <UserButton afterSignOutUrl="/" />
             </SignedIn>
 
@@ -54,10 +50,9 @@ export default function LandingPage() {
 
       <main className="flex-1">
         
-        {/* --- HERO --- */}
         <section className="py-20 md:py-32 text-center px-4 bg-linear-to-b from-blue-50/50 to-white">
           <div className="container mx-auto max-w-4xl">
-            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-blue-100 text-blue-700 hover:bg-blue-200 mb-6">
+            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-700 mb-6">
               ✨ A nova forma de monetizar sua bio
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6">
@@ -69,7 +64,6 @@ export default function LandingPage() {
               Transforme seguidores em clientes em segundos.
             </p>
             
-            {/* BOTÕES DO HERO TAMBÉM PODEM SER INTELIGENTES */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <SignedOut>
                 <Link href="/sign-up">
@@ -94,11 +88,21 @@ export default function LandingPage() {
               </Link>
             </div>
             
-            <p className="mt-4 text-xs text-slate-500">Não requer cartão de crédito • Plano grátis para sempre</p>
+            <SignedOut>
+                <p className="mt-6 text-sm text-slate-500">
+                    Já tem uma conta? <Link href="/sign-in" className="text-blue-600 font-semibold hover:underline">Fazer Login</Link>
+                </p>
+            </SignedOut>
+            
+            <SignedIn>
+                <p className="mt-6 text-sm text-slate-500">
+                    Você já está logado.
+                </p>
+            </SignedIn>
+
           </div>
         </section>
 
-        {/* --- FEATURES --- */}
         <section id="features" className="py-20 bg-slate-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -133,7 +137,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* --- PRICING --- */}
         <section id="pricing" className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -143,7 +146,6 @@ export default function LandingPage() {
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               
-              {/* FREE PLAN */}
               <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm hover:shadow-md transition-all">
                 <h3 className="text-xl font-bold mb-2">Starter</h3>
                 <div className="text-4xl font-extrabold mb-6">R$ 0 <span className="text-base font-normal text-slate-500">/mês</span></div>
@@ -163,7 +165,6 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              {/* PRO PLAN */}
               <div className="relative rounded-2xl border-2 border-blue-600 bg-white p-8 shadow-xl scale-105">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                   Recomendado
