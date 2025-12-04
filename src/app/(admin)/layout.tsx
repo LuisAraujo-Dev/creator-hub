@@ -7,18 +7,16 @@ import {
   User, 
   Settings, 
   LogOut, 
-  ExternalLink, 
   ShoppingBag, 
   Tag, 
   Handshake,
   LifeBuoy,
-  ShieldAlert // Ícone para o Super Admin
+  ShieldAlert
 } from "lucide-react";
 import { toast } from "sonner";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { cn } from "../../../lib/utils";
 
-// Defina aqui os emails que podem ver o botão de Admin
 const ADMIN_EMAILS = ["correluisaraujo@gmail.com"];
 
 export default function AdminLayout({
@@ -31,7 +29,6 @@ export default function AdminLayout({
   const { signOut } = useClerk();
   const { user } = useUser();
 
-  // Verifica se o usuário logado é um admin
   const isSuperAdmin = user?.emailAddresses.some(email => 
     ADMIN_EMAILS.includes(email.emailAddress)
   );
@@ -66,7 +63,6 @@ export default function AdminLayout({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between gap-4">
             
-            {/* LOGO (Clicável para Dashboard) */}
             <Link 
               href="/admin" 
               className="flex items-center gap-2 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
@@ -78,7 +74,6 @@ export default function AdminLayout({
               <span className="text-lg font-bold tracking-tight hidden md:block">CreatorHub</span>
             </Link>
 
-            {/* NAVEGAÇÃO PRINCIPAL */}
             <nav className="flex items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar py-1 px-2 max-w-full">
               <Link href="/admin" className={getLinkClass("/admin")} title="Dashboard">
                 <LayoutDashboard size={18} />
@@ -102,7 +97,6 @@ export default function AdminLayout({
                 <span className="hidden md:inline">Ajuda</span>
               </Link>
 
-              {/* LINK SUPER ADMIN (Só aparece para você) */}
               {isSuperAdmin && (
                 <Link href="/admin/system/users" className={cn(getLinkClass("/admin/system/users"), "text-red-600 hover:text-red-700 hover:bg-red-50")} title="Super Admin">
                     <ShieldAlert size={18} />
@@ -111,15 +105,7 @@ export default function AdminLayout({
               )}
             </nav>
 
-            {/* AÇÕES DO USUÁRIO */}
-            <div className="flex items-center gap-1 shrink-0">
-               <Link 
-                  href="/" 
-                  target="_blank" 
-                  className="hidden sm:flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-full mr-2 border border-blue-100"
-               >
-                  <ExternalLink size={14} /> <span className="hidden lg:inline">Ver página</span>
-               </Link>
+            <div className="flex items-center gap-2 shrink-0">
 
                <Link href="/admin/profile" className={cn("p-2 rounded-full transition", isActiveLink("/admin/profile") ? "text-blue-600 bg-blue-50" : "text-gray-500 hover:bg-gray-100")} title="Perfil">
                   <User size={20} />

@@ -12,9 +12,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { User, SocialLinks } from "@prisma/client"; 
 import { ImageUpload } from "@/components/ui/image-upload"; 
+import { ShareModal } from "@/components/share-modal"; 
 import { 
   Instagram, Facebook, Linkedin, Twitter, Youtube, 
-  MessageCircle, Globe, Send, Gamepad2, Camera, Video, Ghost 
+  MessageCircle, Globe, Send, Gamepad2, Camera, Video, Ghost, 
+  Copy, Check 
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -49,17 +51,9 @@ const SOCIAL_CONFIG = [
 const optionalString = z.string().optional().or(z.literal('')).nullable();
 
 const profileSchema = z.object({
-  name: z.string({
-    required_error: "O nome é obrigatório.",
-    invalid_type_error: "O nome deve ser um texto.",
-  }).min(2, {
-    message: "O nome deve ter pelo menos 2 caracteres.",
-  }).max(50, {
-    message: "O nome pode ter no máximo 50 caracteres.",
-  }),
-  bio: z.string().max(160, "A bio deve ter no máximo 160 caracteres.").optional().or(z.literal('')).nullable(),
+  name: z.string().min(2, "Nome obrigatório").max(50),
+  bio: z.string().max(160).optional().or(z.literal('')).nullable(),
   avatarUrl: optionalString,
-  
   instagram: optionalString,
   tiktok: optionalString,
   youtube: optionalString,
@@ -88,6 +82,7 @@ interface ProfileFormProps {
 export function ProfileForm({ initialData }: ProfileFormProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
+    const [isCopied, setIsCopied] = useState(false); 
 
     const [activeNetworks, setActiveNetworks] = useState<Record<string, boolean>>(() => {
         const socials = initialData?.socialLinks as any || {};
@@ -111,8 +106,8 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
 
         return {
             name: initialData?.name || "",
-            bio: initialData?.bio || "", 
-            avatarUrl: initialData?.avatarUrl || "", 
+            bio: initialData?.bio || "",
+            avatarUrl: initialData?.avatarUrl || "",
             ...sanitizedSocials
         };
     };
@@ -135,23 +130,34 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             await axios.put('/api/profile', data);
             toast.success("Perfil atualizado com sucesso!");
             router.refresh(); 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            toast.error("Erro ao atualizar perfil.");
+            if (error.response?.data?.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error("Erro ao atualizar perfil.");
+            }
         } finally {
             setIsSaving(false);
         }
     }
 
     function onInvalid(errors: any) {
-        console.error("Erros de validação:", errors);
-        const firstError = Object.values(errors)[0] as any;
-        if (firstError) {
-            toast.error(`Erro no campo: ${firstError.message || "Verifique os dados"}`);
-        } else {
-            toast.error("Existem erros no formulário. Verifique os campos.");
-        }
+        toast.error("Existem erros no formulário. Verifique os campos.");
     }
+
+    // URL pública
+    const publicUrl = typeof window !== "undefined" 
+        ? `${window.location.origin}/${initialData?.username}` 
+        : `creatorhub.app/${initialData?.username}`;
+
+    // Função de Copiar
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(publicUrl);
+        setIsCopied(true);
+        toast.success("Link copiado para a área de transferência!");
+        setTimeout(() => setIsCopied(false), 2000);
+    };
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8 w-full">
@@ -172,9 +178,6 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                                 disabled={isSaving}
                             />
                         </div>
-                        <p className="text-[0.8rem] text-muted-foreground">
-                            Recomendado: Imagem quadrada, max 4MB.
-                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -197,17 +200,52 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                         <Textarea 
                             id="bio" 
                             className="resize-none" 
-                            placeholder="Compartilho minha rotina de treinos..." 
+                            placeholder="Compartilho minha rotina..." 
                             disabled={isSaving}
                             {...form.register("bio")} 
                         />
-                        {form.formState.errors.bio && (
-                            <p className="text-sm font-medium text-red-500">
-                                {form.formState.errors.bio.message}
-                            </p>
-                        )}
                     </div>
 
+                </CardContent>
+            </Card>
+
+            <Card className="bg-blue-50/50 border-blue-100">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                        🔗 Seu Link Público
+                    </CardTitle>
+                    <CardDescription>
+                        Copie este link e coloque na bio do Instagram, TikTok ou WhatsApp.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                            <Input 
+                                readOnly 
+                                value={publicUrl.replace('https://', '')} 
+                                className="bg-white pr-10 font-mono text-sm text-slate-600"
+                            />                
+                        </div>
+                        
+                        <Button 
+                            type="button" 
+                            onClick={handleCopyLink}
+                            variant={isCopied ? "default" : "outline"}
+                            className={isCopied ? "bg-green-600 hover:bg-green-700 text-white border-green-600" : "bg-white border-blue-200 text-blue-700 hover:bg-blue-50"}
+                        >
+                            {isCopied ? (
+                                <>
+                                    <Check className="w-4 h-4 mr-2" /> Copiado
+                                </>
+                            ) : (
+                                <>
+                                    <Copy className="w-4 h-4 mr-2" /> Copiar
+                                </>
+                            )}
+                        </Button>
+
+                    </div>
                 </CardContent>
             </Card>
 
@@ -229,9 +267,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                                             <div className={`p-2 rounded-full ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
                                                 <Icon size={18} />
                                             </div>
-                                            <Label htmlFor={`switch-${net.id}`} className="cursor-pointer font-semibold text-sm">
+                                            <span className="font-semibold text-sm cursor-default">
                                                 {net.label}
-                                            </Label>
+                                            </span>
                                         </div>
                                         <Switch 
                                             id={`switch-${net.id}`}
